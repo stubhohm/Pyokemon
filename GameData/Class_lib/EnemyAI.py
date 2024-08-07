@@ -3,6 +3,7 @@ from .Inventory import Inventory
 from .Attack import Attack
 from ..Move_List.moves import mvstruggle
 from ..Keys import t_ally, t_enemy, t_enemy_side, t_self, t_self_side
+from ..Keys import status, taunted, tormented
 from ..Keys import hp
 from ..Function_Lib.General_Functions import random, rand85_100, rand100, rand256
 from ..Function_Lib.Combat_Fx import get_attack_typing_multiplier
@@ -13,15 +14,24 @@ from .ActorBattleInfo import ActorBattleInfo
 class EnemyAI():
     def __init__(self) -> None:
         pass
-    
-    def select_self_buff_move(self,active:Creature)-> Attack:
+
+    def is_valid_move(self, move:Attack, active:Creature):
+        if not move:
+            return False
+        if move.points == 0:
+            return False
+        if self.is_taunted and move.type == status:
+            return False
+        if self.is_tormented and active.stats.last_attack == move:
+            return False
+        return True
+
+    def select_self_buff_move(self, active:Creature)-> Attack:
         # if the move is self modifying and works on self
         # If our modifier is 0 or less use the move
         self_buff_move = None
         for move in active.moves.move_list:
-            if not move:
-                continue
-            if move.points == 0:
+            if not self.is_valid_move(move):
                 continue
             if not move.modifiying_stat:
                 continue
@@ -37,16 +47,13 @@ class EnemyAI():
         # if the move is enemy modifying
         # If enemy modifier is 2 or greater the move
         enemy_debuff_move = None
+
         for move in active.moves.move_list:
-            if not move:
-                continue
-            if move.points == 0:
+            if not self.is_valid_move(move, active):
                 continue
             if not move.modifiying_stat:
                 continue
             if not (move.target == t_enemy_side or move.target == t_enemy):
-                continue
-            if not player_active.stats.modifiers[move.modifiying_stat] < 2:
                 continue
             enemy_debuff_move = move
             break
@@ -56,12 +63,8 @@ class EnemyAI():
         best_damage = 0
         best_attack = None
         for move in active.moves.move_list:
-            if not move:
+            if not self.is_valid_move(move, active):
                 continue
-            if move.points == 0:
-                continue
-            if move.base_power == 0:
-                continue 
             attack_multiplier = get_attack_typing_multiplier(move, player_active.stats)
             estimated_damage = attack_multiplier * move.base_power
             if estimated_damage > best_damage:
@@ -98,8 +101,18 @@ class EnemyAI():
                 return creature
         return None
 
+    def set_torment_and_taunt(self, active:Creature):
+        self.is_taunted = False
+        self.is_tormented = False
+        for effect in active.stats.lingering_effects:
+            if effect.name == taunted:
+                self.is_taunted = True
+            if effect.name == tormented:
+                self.is_tormented = True
+
     def get_npc_action(self, npc:ActorBattleInfo, player_active:Creature):
         remaining_hp = npc.active.stats.get_remaining_hp()
+        self.set_torment_and_taunt(npc.active)
         if npc.check_for_struggle() and not npc.check_available_swap():
             move = mvstruggle()
         elif remaining_hp == 0:

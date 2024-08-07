@@ -232,7 +232,7 @@ class Battle():
         if actor.actor_type != player:
             if type(self.player.action) in (SpecialAttack, PhysicalAttack, StatusAttack):
                 if actor.active in self.player.target:
-                    actor.active.stats.reset_modifers()
+                    actor.active.stats.end_battle()
                     self.player.target.remove(actor.active)
                     self.player.target.append(new_active)
         if actor.actor_type == player:
@@ -241,7 +241,7 @@ class Battle():
                     if not npc_actor.target:
                         continue
                     if actor.active in npc_actor.target:
-                        actor.active.stats.reset_modifers()
+                        actor.active.stats.end_battle()
                         npc_actor.target.remove(self.player.active)
                         npc_actor.target.append(new_active)
         if actor.actor_type == player:

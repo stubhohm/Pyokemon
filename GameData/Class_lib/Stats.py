@@ -25,13 +25,14 @@ class Stats():
         self.special_situation = None
         self.ability = Ability()
         self.leveling = Leveling()
-        self.lingering_effect = LingeringEffect()
+        self.lingering_effects:list[LingeringEffect] = []
         self.stat_block:BattleInfoDisplay = None
         self.ev_dict = {}
         self.iv_dict = {}
         self.ev_yield_dict = {}
         self.last_attack = None
         self.protected = False
+        self.moved:bool = False
         self.name:str = ''
         self.nature = pick_random_nature()
         self.generate_iv_ev_dict()
@@ -43,7 +44,9 @@ class Stats():
         self.reset_modifers()
         self.last_attack = None
         self.protected = False
+        self.moved = False
         self.special_situation = None
+        self.lingering_effects.clear_effect()
 
     def print_to_terminal(self, text):
         ui.display.active.battle_terminal.slow_print(text, terminal_font_size, black)
@@ -53,7 +56,7 @@ class Stats():
         stats.ev_dict = self.ev_dict
         stats.iv_dict = self.iv_dict
         stats.status = self.status
-        stats.lingering_effect = self.lingering_effect
+        stats.lingering_effects = self.lingering_effects
         missing_hp = self.active_max[hp] - self.active_value[hp]
         stats.active_value[hp] = stats.active_max[hp] - missing_hp
         for stat in other_stats_list:
@@ -406,7 +409,7 @@ class Stats():
             self.modify_stat(stat, modifier)
 
     def check_for_lingering_effect(self):
-        for effects in self.lingering_effect.active_effects:
+        for effects in self.lingering_effects:
             if not effects:
                 continue
             effects.trigger_lingering_effect(self)

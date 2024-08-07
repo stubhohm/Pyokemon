@@ -40,6 +40,7 @@ class Attack():
         self.forces_swap = False
         self.protection = False
         self.hits = 1
+        self.end_on_miss = True
         self.lingering_effect = LingeringEffect()
 
     def print_to_terminal(self, text):
@@ -73,10 +74,15 @@ class Attack():
     def set_restore(self, value:float):
         self.restore = value
 
-    def set_self_stat_increase(self, stats:list[str], chance:int, increase:int):
-        self.self_increase_stats = stats
-        self.self_increase_value = increase
-        self.self_increase_proc = chance
+    def set_self_stat_change(self, stats:list[str], chance:int, change:int):
+        self.self_change_stats = stats
+        self.self_change_value = change
+        self.self_change_proc = chance
+
+    def set_foe_stat_change(self, stats:list[str], chance:int, change:int):
+        self.foe_change_stats = stats
+        self.foe_change_value = change
+        self.foe_change_proc = chance
 
     def false_swipe(self, target:Stats, damage:int):
         if self.name != 'False Swipe':
@@ -92,8 +98,9 @@ class Attack():
     def set_force_swap(self):
         self.forces_swap = True
 
-    def set_multihit(self, hits:int):
+    def set_multihit(self, hits:int, end_on_miss:bool = True):
         self.hits = hits
+        self.end_on_miss = end_on_miss
 
     def check_crit(self, target:Stats, attacker:Stats):
         value = rand100() + attacker.active_value[crit_ratio]
@@ -156,6 +163,9 @@ class Attack():
     def check_for_status_apply(self, target_stats:Stats):
         if not self.status:
             return
+        if self.name in ['Bite', 'Extrasensory']:
+            if target_stats.moved:
+                return
         rng = rand100()
         if rng < self.status_proc:
             text = f'{target_stats.name} {status_applied_text[self.status]} by {self.name}!'
@@ -181,7 +191,23 @@ class Attack():
         else:
             return 1
 
+    def get_flail_damage(self, n:int):
+        if n < 5:
+            self.base_power = 200
+        elif n < 11:
+            self.base_power = 150
+        elif n < 21:
+            self.base_power = 100
+        elif n < 36:
+            self.base_power = 80
+        elif n < 69: # nice
+            self.base_power = 40
+        else:
+            self.base_power = 20 
+
     def get_base_damage(self, target:Stats, attacker:Stats, situation_hit:bool):
+        if self.name == 'Flail':
+            self.get_flail_damage(attacker.get_remaining_hp())
         if self.base_power == 0:
             return 0
         level_value = ((2 * attacker.leveling.level) / 5) + 2
@@ -195,18 +221,18 @@ class Attack():
             base_damage = float(base_damage * self.situation_damage)
         return base_damage
 
-    def get_weather_multiplier(self, weather):
-        if weather == no_weather:
+    def get_weather_multiplier(self):
+        if self.weather == no_weather:
             return 1
         if self.element == fire or self.name == 'Solar Beam':
-            if weather == raining:
+            if self.weather == raining:
                 return 0.5
-            if weather == harsh_sunlight:
+            if self.weather == harsh_sunlight:
                 return 1.5
         if self.element == water:
-            if weather == raining:
+            if self.weather == raining:
                 return 1.5
-            if weather == harsh_sunlight:
+            if self.weather == harsh_sunlight:
                 return 0.5
         return 1
 
@@ -235,13 +261,13 @@ class Attack():
                 return 2
         return 1
 
-    def deal_damage(self, target:Stats, attacker:Stats, weather:str, situation_hit:bool):
+    def deal_damage(self, target:Stats, attacker:Stats, situation_hit:bool):
         base_damage = self.get_base_damage(target, attacker, situation_hit)
         if base_damage == 0:
             return 0
         burn = self.is_burned(attacker)
         targets = 1
-        weather_multiplier = self.get_weather_multiplier(weather)
+        weather_multiplier = self.get_weather_multiplier()
         doubledmg = self.get_doubledmg_multiplier(target, attacker)
         stab = get_stab_multiplier(self, attacker)
         typing = get_attack_typing_multiplier(self, target)
@@ -267,9 +293,10 @@ class Attack():
         self.status = status
         self.status_proc = status_proc
 
-    def add_stat_modifier(self, stat, modifier):
+    def add_stat_modifier(self, stat, modifier, reset = False):
         self.modifiying_stat = stat
         self.stat_modifier = modifier
+        self.stat_rest = reset
 
     def add_protection(self):
         self.protection = True
@@ -280,7 +307,8 @@ class Attack():
             return
         ability = self.modifiying_stat
         modifier = self.stat_modifier
-        blocked_or_maxed = target.modify_stat(ability, modifier)
+        reset = self.stat_reset
+        blocked_or_maxed = target.modify_stat(ability, modifier, reset)
         if blocked_or_maxed:
             return
         adj_array = ['slightly', 'sharply', 'greatly']
@@ -294,6 +322,10 @@ class Attack():
 
     def check_attack_connection(self, target:Stats, attacker:Stats):
         hit = self.check_hit(target.modifiers[evasion], attacker.modifiers[evasion], attacker.last_attack, target.special_situation)
+        if self.name == 'Fake Out' and target.moved:
+            text = f'{self.name} Failed!'
+            self.print_to_terminal(text)
+            return False
         if not hit:
             text = f'{self.name} missed!'
             self.print_to_terminal(text)
@@ -317,14 +349,26 @@ class Attack():
             self.print_to_terminal(text)
         attacker_stats.change_hp(hp_change)
 
-    def check_self_stat_increase(self, attacker_stats:Stats):
-        if self.self_increase_value == 0:
+    def check_self_stat_change(self, attacker_stats:Stats):
+        if self.self_change_value == 0:
             return
         rng = rand100()
-        if rng > self.self_increase_proc:
+        if rng > self.self_change_proc:
             return
-        for stat in self.self_increase_stats:
-            attacker_stats.modify_stat(stat, self.self_increase_value)
+        for stat in self.self_change_stats:
+            change = self.self_change_value
+            if self.name == 'Growth' and self.weather == harsh_sunlight:
+                change = 2
+            attacker_stats.modify_stat(stat, change)
+    
+    def check_foe_stat_change(self, target_stats:Stats):
+        if self.foe_change_value == 0:
+            return
+        rng = rand100()
+        if rng > self.foe_change_proc:
+            return
+        for stat in self.foe_change_stats:
+            target_stats.modify_stat(stat, self.foe_change_value)
 
     def add_recoil(self, modifier:float):
         self.recoil_modifier = modifier
@@ -379,20 +423,23 @@ class Attack():
         #target_stats.ability.check_for_on_hit(self)
         #attacker_stats.ability.check_for_on_hit(self, attacker_stats, target_stats)
 
-    def resolve_hit(self, target_stats:Stats, attacker_stats:Stats, weather:str, situation_hit:bool):
-        damage = self.deal_damage(target_stats, attacker_stats, weather, situation_hit)
+    def resolve_hit(self, target_stats:Stats, attacker_stats:Stats, situation_hit:bool):
+        damage = self.deal_damage(target_stats, attacker_stats, situation_hit)
         target_stats.ability.check_absorb_or_negate(self, damage, target_stats)
         target_stats.change_hp(damage)
         self.modify_ability(target_stats)
         self.check_for_status_apply(target_stats)
         self.check_for_recoil_damage(damage, attacker_stats)
-        self.check_self_stat_increase(attacker_stats)
+        self.check_self_stat_change(attacker_stats)
+        self.check_foe_stat_change(target_stats)
         target_stats.check_for_lingering_effect()
         self.reset_bp()
         self.on_hit_abilities(target_stats, attacker_stats)
 
     def use_move(self, target_stats:Stats, attacker_stats:Stats, weather:str):
         self.points -= 1
+        self.weather = weather
+        attacker_stats.moved = True
         if target_stats.protected and target_stats != attacker_stats:
             text = f'{target_stats.name} was protected.'
             self.print_to_terminal(text)
@@ -406,8 +453,16 @@ class Attack():
             hit = self.check_attack_connection(target_stats, attacker_stats)
             situation_hit = self.check_situation_hit(target_stats)
             if hit or situation_hit:
-                self.resolve_hit(target_stats, attacker_stats, weather, situation_hit)
-                attacker_stats.last_attack = self
+                if self.name == 'Razor Wind' and attacker_stats.last_attack != self:
+                    text = f'{self.name} whipped up a whirlwind!'
+                    self.print_to_terminal(text)
+                    attacker_stats.last_attack = self
+                else:
+                    self.resolve_hit(target_stats, attacker_stats, situation_hit)
+                    if self.name != 'Razor Wind':
+                        attacker_stats.last_attack = self
+                    else:
+                        attacker_stats.last_attack = None
                 successful_hit = True
                 attacker_stats.protected = self.protection
                 self.diminish()

@@ -6,10 +6,12 @@ from .Item import HealingItem, StatusItem, CaptureItem, Item
 from ..Move_List.moves import mvstruggle
 from .UI import ui
 from ..Keys import fight, item, run, swap, cancel, select, combat_inputs
+from ..Keys import physical, special, status
 from ..Keys import up, down, left, right, directional_inputs
 from ..Keys import moves, default
 from ..Keys import description, quant
 from ..Keys import t_all, t_ally, t_enemy, t_enemy_side, t_self, t_self_side
+from ..Keys import taunted, tormented
 from ..Constants import terminal_font_size
 from ..Colors import black
 
@@ -19,33 +21,20 @@ class PlayerCombatInput():
 
     def print_to_terminal(self, text):
         ui.display.active.battle_terminal.slow_print(text, terminal_font_size, black)
-    '''
-    def select_move(self, player:ActorBattleInfo):
-        terminal = ui.display.active.battle_terminal
-        active = player.active
-        moves_list = active.moves.get_moves_list()
-        terminal.define_list(moves_list, 2)
-        while True:
-            ui.display.active.update()
-            input_value = ui.input.get_player_input()
-            output = terminal.use_combat_terminal(input_value)
-            if output == cancel:
-                return output
-            if not output:
-                continue
-            for move_item in player.active.moves.move_list:
-                if not move_item:
-                    continue
-                if move_item == output:
-                    selected_move = move_item
-            return selected_move
-    '''        
+       
     def combat_fight(self, player:ActorBattleInfo):
         terminal = ui.display.active.battle_terminal
         moves_list = player.active.moves.get_moves_list()
         terminal.mode = moves
         terminal.define_list(moves_list, 2)
         selecting_move = True
+        is_taunted = False
+        is_tormented = False
+        for effect in player.active.stats.lingering_effects:
+            if effect.name == taunted:
+                is_taunted = True
+            if effect.name == tormented:
+                is_tormented = True
         while selecting_move:
             if player.check_for_struggle():
                 return mvstruggle()
@@ -53,7 +42,11 @@ class PlayerCombatInput():
             if not selected_move or selected_move == cancel:
                 return cancel
             elif selected_move.points == 0:
-                print('You cannot select a move with no remaining PP.')
+                self.print_to_terminal('You cannot select a move with no remaining PP.')
+            elif is_taunted and selected_move.type == status:
+                self.print_to_terminal('You cannot select a status move due to taunt.')
+            elif is_tormented and selected_move == player.active.stats.last_attack:
+                self.print_to_terminal('You cannot select the same move again while tormented.')
             else:
                 return selected_move
         return False

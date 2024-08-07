@@ -3,10 +3,10 @@ from ...Ability_List.AbilityList import abpick_up as ability
 from ...Keys import medium_fast as leveling_type
 from ...Keys import normal as p_type, no_type as s_type
 from ...Keys import speed
-from ...Move_List.moves import mvember, mvfire_punch, mvfocus_energy, mvgrowl, mvscratch, mvdouble_kick, mvpeck, mvsand_attack, mvbulk_up, mvquick_attack, mvblaze_kick, mvslash, mvmirror_move, mvsky_uppercut
+from ...Move_List.moves import mvgrowl, mvhead_butt, mvtackle, mvtail_whip, mvsand_attack, mvodor_slueth, mvmud_sport, mvfury_swipes, mvcovet, mvslash, mvrest, mvbelly_drum
 
-def instance_linoone(level:int):
-    blaziken = Creature('Linoone')
+def instance_creature(level:int):
+    pokemon = Creature('Linoone')
     hpts = 78
     atk = 70
     dfense = 61
@@ -20,32 +20,31 @@ def instance_linoone(level:int):
     evolve_level = 101
     evolution = None
 
-    blaziken.stats.leveling.define_leveling(leveling_type, starting_level, base_exp)
-    blaziken.stats.set_stats(hpts, dfense, sp_def, atk, sp_atk, spd)
-    blaziken.stats.set_typing(p_type, s_type)
-    blaziken.stats.ability.set_ability(ability)
+    pokemon.stats.leveling.define_leveling(leveling_type, starting_level, base_exp)
+    pokemon.stats.set_stats(hpts, dfense, sp_def, atk, sp_atk, spd)
+    pokemon.stats.set_typing(p_type, s_type)
+    pokemon.stats.ability.set_ability(ability)
 
-    blaziken.set_catch_rate(catch_rate)
-    blaziken.stats.leveling.set_evolve(evolve_level, evolution)
-    blaziken.stats.set_ev_yeild(evs)
+    pokemon.set_catch_rate(catch_rate)
+    pokemon.stats.leveling.set_evolve(evolve_level, evolution)
+    pokemon.stats.set_ev_yeild(evs)
 
     training_moves = []
     breeding_moves = []
     levelup_moves = [None] * 100
-    levelup_moves[1] = [mvember, mvfire_punch, mvfocus_energy, mvgrowl, mvscratch]
-    levelup_moves[7] = [mvfocus_energy]
-    levelup_moves[13] = [mvember]
-    levelup_moves[16] = [mvdouble_kick]
-    levelup_moves[17] = [mvpeck]
-    levelup_moves[21] = [mvsand_attack]
-    levelup_moves[28] = [mvbulk_up]
-    levelup_moves[32] = [mvquick_attack]
-    levelup_moves[36] = [mvblaze_kick]
-    levelup_moves[42] = [mvslash]
-    levelup_moves[49] = [mvmirror_move]
-    levelup_moves[59] = [mvsky_uppercut]
-    blaziken.moves.define_moves(breeding_moves, training_moves, levelup_moves)
-    blaziken.moves.learn_on_instance(level)
-    return blaziken
+    levelup_moves[1] = [mvgrowl, mvhead_butt, mvtackle, mvtail_whip]
+    levelup_moves[5] = [mvtail_whip]
+    levelup_moves[9] = [mvhead_butt]
+    levelup_moves[13] = [mvsand_attack]
+    levelup_moves[17] = [mvodor_slueth]
+    levelup_moves[23] = [mvmud_sport]
+    levelup_moves[29] = [mvfury_swipes]
+    levelup_moves[35] = [mvcovet]
+    levelup_moves[41] = [mvslash]
+    levelup_moves[47] = [mvrest]
+    levelup_moves[53] = [mvbelly_drum]
+    pokemon.moves.define_moves(breeding_moves, training_moves, levelup_moves)
+    pokemon.moves.learn_on_instance(level)
+    return pokemon
 
 

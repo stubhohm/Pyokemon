@@ -3,12 +3,12 @@ from ...Ability_List.AbilityList import abchlorophyll, abearly_bird
 from ...Keys import medium_slow as leveling_type
 from ...Keys import grass as p_type, no_type as s_type
 from ...Keys import defense as ev
-from ...Move_List.moves import mvharden, mvgrowth, mvsynthesis, mvsunny_day, mvexplosion
+from ...Move_List.moves import *
 from ...Function_Lib.General_Functions import rand100
-from .Nuzleaf import instance_creature as instance_evolution
+from .SecondStage import instance_creature as instance_evolution
 
 def instance_creature(level:int):
-    pokemon = Creature('Seedot')
+    pokemon = Creature('first')
     hpts = 40
     atk = 40
     sp_atk = 50
@@ -38,13 +38,16 @@ def instance_creature(level:int):
     training_moves = []
     breeding_moves = []
     levelup_moves = [None] * 100
-    levelup_moves[1] = []
-    levelup_moves[3] = [mvharden]
-    levelup_moves[7] = [mvgrowth]
-    levelup_moves[13] = []
-    levelup_moves[21] = [mvsynthesis]
-    levelup_moves[31] = [mvsunny_day]
-    levelup_moves[45] = [mvexplosion]
+    levelup_moves[1] = [mvleer, mvpound]
+    levelup_moves[6] = [mvabsorb]
+    levelup_moves[11] = [mvquick_attack]
+    levelup_moves[16] = [mvpursuit]
+    levelup_moves[21] = [mvscreech]
+    levelup_moves[26] = [mvmega_drain]
+    levelup_moves[31] = [mvagility]
+    levelup_moves[36] = [mvslam]
+    levelup_moves[41] = [mvdetect]
+    levelup_moves[46] = [mvgiga_drain]
     pokemon.moves.define_moves(breeding_moves, training_moves, levelup_moves)
     pokemon.moves.learn_on_instance(level)
     return pokemon

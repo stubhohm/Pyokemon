@@ -3,19 +3,19 @@ from ...Ability_List.AbilityList import abchlorophyll, abearly_bird
 from ...Keys import medium_slow as leveling_type
 from ...Keys import grass as p_type, dark as s_type
 from ...Keys import attack as ev
-from ...Move_List.moves import mvpound, mvharden, mvfake_out, mvtorment, mvfeint_attack, mvrazor_wind, mvswagger, mvextrasensory
+from ...Move_List.moves import *
 from ...Function_Lib.General_Functions import rand100
-from .Shiftry import instance_creature as instance_evolution
+from .FinalStage import instance_creature as instance_evolution
 
 def instance_creature(level:int):
-    pokemon = Creature('Nuzleaf')
+    pokemon = Creature('second')
     
-    hp = 70
-    attack = 70
-    defense = 40 
-    sp_attack = 60
-    sp_defense = 40
-    speed = 60
+    hpts = 70
+    atk = 70
+    dfense = 40 
+    sp_atk = 60
+    sp_def = 40
+    spd = 60
     starting_level = level
     base_exp = 142
     evs = {ev: 2}
@@ -26,7 +26,7 @@ def instance_creature(level:int):
     evolution = instance_evolution
 
     pokemon.stats.leveling.define_leveling(leveling_type, starting_level, base_exp)
-    pokemon.stats.set_stats(hp, defense, sp_defense, attack, sp_attack, speed)
+    pokemon.stats.set_stats(hpts, dfense, sp_def, atk, sp_atk, spd)
     pokemon.stats.set_typing(p_type, s_type)
     pokemon.stats.ability.set_ability(ability)
     pokemon.set_catch_rate(45)
@@ -36,15 +36,17 @@ def instance_creature(level:int):
     training_moves = []
     breeding_moves = []
     levelup_moves = [None] * 100
-    levelup_moves[1] = [mvpound]
-    levelup_moves[3] = [mvharden]
-    levelup_moves[13] = []
-    levelup_moves[19] = [mvfake_out]
-    levelup_moves[25] = [mvtorment]
-    levelup_moves[31] = [mvfeint_attack]
-    levelup_moves[37] = [mvrazor_wind]
-    levelup_moves[43] = [mvswagger]
-    levelup_moves[49] = [mvextrasensory]
+    levelup_moves[1] = [mvleer, mvpound, mvabsorb, mvquick_attack]
+    levelup_moves[6] = [mvabsorb]
+    levelup_moves[11] = [mvquick_attack]
+    levelup_moves[16] = [mvfury_cutter]
+    levelup_moves[17] = [mvpursuit]
+    levelup_moves[23] = [mvscreech]
+    levelup_moves[29] = [mvleaf_blade]
+    levelup_moves[35] = [mvagility]
+    levelup_moves[41] = [mvslam]
+    levelup_moves[47] = [mvdetect]
+    levelup_moves[53] = [mvfalse_swipe]
     pokemon.moves.define_moves(breeding_moves, training_moves, levelup_moves)
     pokemon.moves.learn_on_instance(level)
     return pokemon

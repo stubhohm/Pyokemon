@@ -35,7 +35,7 @@ base_crit = 5
 active_status = 'actvie status'
 paralysis, poisoned, badly_poisoned = 'paralysis', 'poisoned', 'badly poisoned'
 burned, frozen, confused, in_love = 'burned', 'frozen', 'confused', 'in love'
-flinched, asleep = 'flinched', 'asleep'
+flinched, asleep, taunted, tormented = 'flinched', 'asleep', 'taunted', 'tormented'
 multiple = 'multiple'
 status_applied_text = {paralysis: 'was parlized',
                        poisoned: 'was poisoned',
