@@ -3,7 +3,7 @@ from ...Ability_List.AbilityList import abrun_away as ability
 from ...Keys import medium_fast as leveling_type
 from ...Keys import dark as p_type, no_type as s_type
 from ...Keys import attack as ev
-from ...Move_List.moves import mvtackle, mvhowl, mvsand_attack, mvbite, mvodor_slueth, mvroar, mvswagger, msscary_face, mvtake_down, mvtaunt, mvcrunch, mvthief
+from ...Move_List.moves import mvtackle, mvhowl, mvsand_attack, mvbite, mvodor_slueth, mvroar, mvswagger, mvscary_face, mvtake_down, mvtaunt, mvcrunch, mvthief
 from .Mightyena import instance_creature as instance_evolution
 
 def instance_creature(level:int):
@@ -35,10 +35,11 @@ def instance_creature(level:int):
     levelup_moves[1] = [mvtackle]
     levelup_moves[5] = [mvhowl]
     levelup_moves[9] = [mvsand_attack]
+    levelup_moves[13] = [mvbite]
     levelup_moves[17] = [mvodor_slueth]
     levelup_moves[21] = [mvroar]
     levelup_moves[25] = [mvswagger]
-    levelup_moves[29] = [mvswagger]
+    levelup_moves[29] = [mvscary_face]
     levelup_moves[33] = [mvtake_down]
     levelup_moves[37] = [mvtaunt]
     levelup_moves[41] = [mvcrunch]

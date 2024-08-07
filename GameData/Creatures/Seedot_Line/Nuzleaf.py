@@ -3,7 +3,7 @@ from ...Ability_List.AbilityList import abchlorophyll, abearly_bird
 from ...Keys import medium_slow as leveling_type
 from ...Keys import grass as p_type, dark as s_type
 from ...Keys import attack as ev
-from ...Move_List.moves import mvpound, mvharden, mvfake_out, mvtorment, mvfeint_attack, mvrazor_wind, mvswagger, mvextrasensory
+from ...Move_List.moves import mvpound, mvharden, mvgrowth, mvfake_out, mvtorment, mvfeint_attack, mvrazor_wind, mvswagger, mvextrasensory
 from ...Function_Lib.General_Functions import rand100
 from .Shiftry import instance_creature as instance_evolution
 
@@ -38,6 +38,7 @@ def instance_creature(level:int):
     levelup_moves = [None] * 100
     levelup_moves[1] = [mvpound]
     levelup_moves[3] = [mvharden]
+    levelup_moves[7] = [mvgrowth]
     levelup_moves[13] = []
     levelup_moves[19] = [mvfake_out]
     levelup_moves[25] = [mvtorment]

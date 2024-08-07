@@ -328,6 +328,11 @@ def mvleer():
     leer.add_stat_modifier(defense, -1)
     return leer
 
+def mvmoonlight():
+    moonlight = StatusAttack('Moonlight', t_self, normal, 5, None)
+    moonlight.set_restore(0.50)
+    return moonlight
+
 def mvmorning_sun():
     morning_sun = StatusAttack('Morning Sun', t_self, normal, 5, None)
     morning_sun.set_restore(0.50)
@@ -471,10 +476,4 @@ def mvtorment():
     torment = StatusAttack('Torment', t_enemy, dark, 15, 100)
     torment.lingering_effect.define_lingering_effect(tormented, [1])
     return torment
-
-# Status Fairy Moves
-def mvmoonlight():
-    moonlight = StatusAttack('Moonlight', t_self, fairy, 5, None)
-    moonlight.set_restore(0.50)
-    return moonlight
 

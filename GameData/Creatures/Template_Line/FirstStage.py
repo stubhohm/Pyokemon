@@ -25,6 +25,8 @@ def instance_creature(level:int):
     ability = abchlorophyll
     if rand100() < 51:
         ability = abearly_bird
+
+    
     
 
     pokemon.stats.leveling.define_leveling(leveling_type, starting_level, base_exp)

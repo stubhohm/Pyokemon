@@ -6,7 +6,7 @@ from ...Keys import attack as ev
 from ...Move_List.moves import mvbite, mvhowl, mvsand_attack, mvtackle, mvodor_slueth, mvroar, mvswagger, mvscary_face, mvtake_down, mvtaunt, mvcrunch, mvthief
 
 def instance_creature(level:int):
-    blaziken = Creature('Mightyena')
+    pokemon = Creature('Mightyena')
     hp = 70
     attack = 90
     defense = 70
@@ -20,14 +20,14 @@ def instance_creature(level:int):
     evolve_level = 101
     evolution = None
 
-    blaziken.stats.leveling.define_leveling(leveling_type, starting_level, base_exp)
-    blaziken.stats.set_stats(hp, defense, sp_defense, attack, sp_attack, speed)
-    blaziken.stats.set_typing(p_type, s_type)
-    blaziken.stats.ability.set_ability(ability)
+    pokemon.stats.leveling.define_leveling(leveling_type, starting_level, base_exp)
+    pokemon.stats.set_stats(hp, defense, sp_defense, attack, sp_attack, speed)
+    pokemon.stats.set_typing(p_type, s_type)
+    pokemon.stats.ability.set_ability(ability)
 
-    blaziken.set_catch_rate(catch_rate)
-    blaziken.stats.leveling.set_evolve(evolve_level, evolution)
-    blaziken.stats.set_ev_yeild(evs)
+    pokemon.set_catch_rate(catch_rate)
+    pokemon.stats.leveling.set_evolve(evolve_level, evolution)
+    pokemon.stats.set_ev_yeild(evs)
 
     training_moves = []
     breeding_moves = []
@@ -44,8 +44,8 @@ def instance_creature(level:int):
     levelup_moves[42] = [mvtaunt]
     levelup_moves[47] = [mvcrunch]
     levelup_moves[52] = [mvthief]
-    blaziken.moves.define_moves(breeding_moves, training_moves, levelup_moves)
-    blaziken.moves.learn_on_instance(level)
-    return blaziken
+    pokemon.moves.define_moves(breeding_moves, training_moves, levelup_moves)
+    pokemon.moves.learn_on_instance(level)
+    return pokemon
 
 

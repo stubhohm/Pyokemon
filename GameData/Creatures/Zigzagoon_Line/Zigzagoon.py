@@ -3,10 +3,10 @@ from ...Ability_List.AbilityList import abpick_up as ability
 from ...Keys import medium_fast as leveling_type
 from ...Keys import normal as p_type, no_type as s_type
 from ...Keys import speed
-from ...Move_List.moves import mvgrowl, mvscratch, mvfocus_energy, mvember, mvpeck, mvsand_attack, mvfire_spin, mvquick_attack, mvslash, mvmirror_move, mvflame_thrower
-from .Linoone import instance_linoone
+from ...Move_List.moves import mvgrowl, mvtackle, mvtail_whip, mvhead_butt, mvsand_attack, mvodor_slueth, mvmud_sport, mvpin_missile, mvcovet, mvflail, mvrest, mvbelly_drum
+from .Linoone import instance_creature as instance_linoone
 
-def instance_zigzagoon(level:int):
+def instance_creature(level:int):
     torchic = Creature('Zigzagoon')
     hpts = 38
     atk = 30
@@ -32,16 +32,17 @@ def instance_zigzagoon(level:int):
     training_moves = []
     breeding_moves = []
     levelup_moves = [None] * 100
-    levelup_moves[1] = [mvgrowl, mvscratch]
-    levelup_moves[7] = [mvfocus_energy]
-    levelup_moves[10] = [mvember]
-    levelup_moves[16] = [mvpeck]
-    levelup_moves[19] = [mvsand_attack]
-    levelup_moves[25] = [mvfire_spin]
-    levelup_moves[28] = [mvquick_attack]
-    levelup_moves[34] = [mvslash]
-    levelup_moves[37] = [mvmirror_move]
-    levelup_moves[43] = [mvflame_thrower]
+    levelup_moves[1] = [mvgrowl, mvtackle]
+    levelup_moves[5] = [mvtail_whip]
+    levelup_moves[9] = [mvhead_butt]
+    levelup_moves[13] = [mvsand_attack]
+    levelup_moves[17] = [mvodor_slueth]
+    levelup_moves[21] = [mvmud_sport]
+    levelup_moves[25] = [mvpin_missile]
+    levelup_moves[29] = [mvcovet]
+    levelup_moves[33] = [mvflail]
+    levelup_moves[37] = [mvrest]
+    levelup_moves[41] = [mvbelly_drum]
     torchic.moves.define_moves(breeding_moves, training_moves, levelup_moves)
     torchic.moves.learn_on_instance(level)
     return torchic
