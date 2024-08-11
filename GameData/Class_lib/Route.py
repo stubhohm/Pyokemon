@@ -152,9 +152,9 @@ class Route():
             if action:
                 encounter = self.determine_encounter()
             if type(encounter) == Creature:
-                self.battle_wild_pokemon(action, player)
+                self.battle_wild_pokemon(encounter, player)
             elif type(encounter) == ActorBattleInfo:
-                self.trainers.engage_trainer(action, player)
+                self.trainers.engage_trainer(encounter, player)
             
             key_input = None
             if key_input:

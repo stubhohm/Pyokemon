@@ -71,11 +71,11 @@ class Battle():
 
     def define_combatants(self):
         self.combatants:list[ActorBattleInfo] = []
-        self.combatants.append(self.player)
         for npc_actor in self.npcs:
             if not npc_actor:
                 continue
             self.combatants.append(npc_actor)
+        self.combatants.append(self.player)
 
     def print_to_terminal(self, text:str):
         ui.display.active.battle_terminal.slow_print(text, terminal_font_size, black)
@@ -84,8 +84,10 @@ class Battle():
         for combatant in self.combatants:
             if combatant.actor_type == wild:
                 text = f'You encounted a wild {combatant.active.name}!'
-            else:
+            elif combatant.actor_type == npc:
                 text = f'{combatant.name} sent out {combatant.active.name}!'
+            else:
+                text = f'Go {combatant.active.name}!'
             self.print_to_terminal(text)
             self.new_active_entry(combatant)
 

@@ -1,10 +1,8 @@
-from ..Constants import trianer_battles_off, gymleader_battles_off
+from ..Constants import trianer_battles_on, gymleader_battles_on
 from ..Keys import no_weather, hp
 from ..Function_Lib.General_Functions import try_again, get_confirmation
 from .ActorBattleInfo import ActorBattleInfo
 from .Battle import Battle
-
-
 
 class LocalTrainers():
     def __init__(self) -> None:
@@ -40,7 +38,7 @@ class LocalTrainers():
         print('')
 
     def engage_leader(self, player:ActorBattleInfo):
-        if gymleader_battles_off:
+        if not gymleader_battles_on:
             print('gym leader battles are toggled off')
             return
         print('')
@@ -56,7 +54,7 @@ class LocalTrainers():
                 self.engage_trainer(player)
 
     def engage_trainer(self, player:ActorBattleInfo):
-        if trianer_battles_off:
+        if not trianer_battles_on:
             print('trainer battles are toggled off')
             return
         if self.is_gym and self.gym_leader.white_out:

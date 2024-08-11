@@ -1,5 +1,5 @@
-from ..Keys import pokemon, level_range, rng_range
-from ..Constants import wild_encounters_off
+from ..Keys import pokemon, level_range
+from ..Constants import wild_encounters_on
 from ..Function_Lib.General_Functions import random, rand100
 from .Creature import Creature
 from .Item import Item
@@ -48,7 +48,7 @@ class TallGrass():
         level = self.select_level(active_encounter[level_range])
         creature = active_encounter[pokemon](level)
         if type(creature) == Creature:
-            if wild_encounters_off:
+            if not wild_encounters_on:
                 print('wild encounters turned off')
             return creature
 
