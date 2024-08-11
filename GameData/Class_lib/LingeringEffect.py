@@ -3,11 +3,13 @@ from ..Function_Lib.General_Functions import rand100
 
 class LingeringEffect():
     def __init__(self) -> None:
-        self.effect:str = ''
+        self.name:str = ''
+        self.effect:bool = False
         self.remaining_duration = 0
 
-    def define_lingering_effect(self, effect:str, duration:list):
-        self.name = effect
+    def define_lingering_effect(self, name:str, drains_hp:bool, duration:list):
+        self.name = name
+        self.drains_hp = drains_hp
         if duration[0] == None:
             duration = [256]
         self.duration = duration
@@ -30,7 +32,7 @@ class LingeringEffect():
             target_stats.lingering_effects.remove(self)
             return
         self.remaining_duration -= 1
-        if self.effect == hp:
+        if self.drains_hp:
             self.lose_hp(target_stats)
 
     def clear_effect(self):

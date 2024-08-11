@@ -8,6 +8,7 @@ class Input():
         self.is_playing = True
         self.key_last = None
 
+
     def get_player_input(self, accept_hold = False):
         name = None
         for event in pygame.event.get():

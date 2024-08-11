@@ -51,7 +51,7 @@ class ActorBattleInfo():
         for move in self.active.moves.move_list:
             if not move:
                 continue
-            if move.points > 0:
+            if move.get_pp() > 0:
                 return False
         return True
     

@@ -163,7 +163,12 @@ class Moves ():
                 learned = False
                 if not move:
                     continue
-                new_move = move()
+                new_move:Attack = move()
+                for moves in self.move_list:
+                    if new_move.name == moves.name:
+                        learned = True
+                if learned:
+                    continue
                 text = f'{name} is trying to learn {new_move.name}!'
                 self.print_to_terminal(text)
                 print(text)

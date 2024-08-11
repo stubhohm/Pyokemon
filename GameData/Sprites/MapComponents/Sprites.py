@@ -1,4 +1,4 @@
-from ..ImageImport import Sprite
+from ...Class_lib.Sprite import Sprite
 from ...Modules.External_Modules import os
 
 directory_path = os.path.join('GameData', 'Sprites', 'MapComponents', 'Images')

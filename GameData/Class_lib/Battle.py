@@ -156,8 +156,25 @@ class Battle():
         self.print_to_terminal(text)
         return False
 
+    def teleport(self, actor:ActorBattleInfo):
+        for combatant in self.combatants:
+            if combatant == actor:
+                continue
+            if combatant.active.stats.ability.check_prevent_fleeing(actor.active.stats):
+                continue
+            if self.combat_type == wild:
+                if actor.actor_type == player:
+                    text = 'You successfully ran away!'
+                else:
+                    text = f'{actor.name} escaped!'
+                self.print_to_terminal(text)
+                self.battling = False
+            else:
+                text = 'Teleport Failed!'
+                self.print_to_terminal(text)
+        
     def determine_attack_order(self, attack_group:list[ActorBattleInfo]):     
-        sorted_attack_group = sorted(attack_group, key=lambda x: (x.action.priority, x.effect_speed), reverse=True)
+        sorted_attack_group = sorted(attack_group, key=lambda x: (x.action.get_priority(), x.effect_speed), reverse=True)
         return sorted_attack_group
 
     def check_pursuit(self, attack_group:list[ActorBattleInfo], actor:ActorBattleInfo):
@@ -286,7 +303,7 @@ class Battle():
         self.print_to_terminal(text)
         
         # If the move targets self submit self stats to the move funtion
-        if action.target in (t_self, t_self_side):
+        if action.get_target() in (t_self, t_self_side):
             self_stats = actor.active.stats
             hit = action.use_move(self_stats, self_stats, self.weather)
             if not hit:
@@ -294,7 +311,7 @@ class Battle():
             self.resolve_hit(action, actor)
         
         # If the target not self and not an arena move
-        if action.target in (t_enemy, t_enemy_side, t_all, t_ally):
+        if action.get_target() in (t_enemy, t_enemy_side, t_all, t_ally):
             # if the actor is an NPC
             if actor.actor_type != player:
                 hit = action.use_move(self.player.active.stats, actor.active.stats, self.weather)
@@ -323,9 +340,13 @@ class Battle():
                     if not hit:
                         return
                     self.resolve_hit(action, target_actor)
+            if hit and action.flee:
+                self.teleport(actor)
 
     def resolve_combat_turn(self, turn_order:list[ActorBattleInfo]):
         for actor in turn_order:
+            if not self.battling:
+                continue
             action = actor.action
             # Only fleeing will be of type string
             if type(action) == str:
@@ -431,9 +452,9 @@ class Battle():
         ui.display.active.update()
 
     def battle_loop(self):
-        battling = True
+        self.battling = True
         self.send_out_starting()
-        while battling:
+        while self.battling:
             self.get_player_actions()
             if not self.player.action:
                 continue 
@@ -445,17 +466,17 @@ class Battle():
                 ui.display.active.update()
                 turn_order, successful_flee  = self.determine_turn_order()
                 if successful_flee:
-                    battling = False
+                    self.battling = False
                     continue
                 self.resolve_combat_turn(turn_order)
                 self.check_for_status_ailments()
-                battling = self.check_for_team_wipe()
+                self.battling = self.check_for_team_wipe()
                 self.check_for_weather_boosts()
                 self.clear_protection()
                 if self.npc_a.active.captured:
-                    battling = False
+                    self.battling = False
                 ui.display.active.update()
-        if not self.player.white_out and not self.npc_a.active.captured:
+        if not self.player.white_out and not self.npc_a.active.captured and not successful_flee:
             text = 'Congratulations, you beat the foe!'
             self.print_to_terminal(text)
         self.end_battle()

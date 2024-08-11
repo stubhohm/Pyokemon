@@ -1,0 +1,65 @@
+from ...Class_lib.Creature import Creature
+from ...Ability_List.AbilityList import abtorrent as ability_1
+from ...Ability_List.AbilityList import abtorrent as ability_2
+from ...Ability_List.AbilityList import abdamp as hidden_ability
+from ...Keys import medium_slow as leveling_type
+from ...Keys import water as p_type
+from ...Keys import ground as s_type
+from ...Keys import attack as ev
+from ...Function_Lib.General_Functions import rand100
+from .FinalStage import instance_creature as instance_evolution
+from ...Move_List.moves import mvgrowl, mvmud_slap, mvtackle, mvwater_gun, mvbide, mvmud_shot, mvforesight, mvmud_sport, mvtake_down, mvmuddy_water, mvprotect, mvearthquake, mvendeavor
+
+
+def instance_creature(level:int):
+    name = 'Marshtomp'
+    pokemon = Creature(name)
+    
+    hp = 70
+    attack = 85
+    defense = 70
+    sp_attack = 60
+    sp_defense = 70
+    speed = 50
+
+    base_exp = 142
+    catch_rate = 45
+    evs = {ev: 2}
+    
+    ability = ability_1
+    if rand100() < 51:
+        ability = ability_2
+    
+    evolve_level = 36
+    evolution = instance_evolution
+
+    pokemon.stats.leveling.define_leveling(leveling_type, level, base_exp)
+    pokemon.stats.set_stats(hp, defense, sp_defense, attack, sp_attack, speed)
+    pokemon.stats.set_typing(p_type, s_type)
+    pokemon.stats.ability.set_ability(ability)
+    pokemon.set_catch_rate(catch_rate)
+    pokemon.stats.leveling.set_evolve(evolve_level, evolution)
+    pokemon.stats.set_ev_yeild(evs)
+
+    training_moves = []
+    breeding_moves = []
+    levelup_moves = set_levelup_moves()
+    pokemon.moves.define_moves(breeding_moves, training_moves, levelup_moves)
+    pokemon.moves.learn_on_instance(level)
+    return pokemon
+
+def set_levelup_moves():
+    levelup_moves = [None] * 100
+    levelup_moves[1] = [mvgrowl, mvtackle, mvmud_slap, mvwater_gun]
+    levelup_moves[6] = [mvmud_slap]
+    levelup_moves[10] = [mvwater_gun]
+    levelup_moves[15] = [mvbide]
+    levelup_moves[16] = [mvmud_shot]
+    levelup_moves[20] = [mvforesight]
+    levelup_moves[25] = [mvmud_sport]
+    levelup_moves[31] = [mvtake_down]
+    levelup_moves[37] = [mvmuddy_water]
+    levelup_moves[42] = [mvprotect]
+    levelup_moves[46] = [mvearthquake]
+    levelup_moves[53] = [mvendeavor]
+    return levelup_moves

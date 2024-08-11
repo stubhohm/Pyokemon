@@ -1,5 +1,5 @@
 from ..Modules.External_Modules import pygame, Surface, Rect, call_flip
-from ..Sprites.ImageImport import Sprite
+from .Sprite import Sprite
 from ..Colors import black, grey
 from .Text import Text
 from .BattleTerminal import BattleTerminal

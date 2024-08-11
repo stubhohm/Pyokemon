@@ -6,7 +6,7 @@ from ..Class_lib.Stats import Stats
 db = Debugging()
 
 def get_attack_typing_multiplier(move, defender:Stats) -> float:
-        attack_type = move.element
+        attack_type = move.get_attack_type()
         if not attack_type:
             return 1
         primary_type = defender.primary_type
@@ -19,13 +19,13 @@ def get_attack_typing_multiplier(move, defender:Stats) -> float:
         return typing_multiplier
 
 def get_stab_multiplier(move, attacker) -> float:
-    if move.element in (attacker.primary_type, attacker.secondary_type):
+    if move.get_attack_type() in (attacker.primary_type, attacker.secondary_type):
         return 1.5
     else:
         return 1
     
 def flash_fire_multiplier(move, attacker:Stats) -> float:
-    if move.element == fire and attacker.ability.name == 'Flash Fire' and attacker.ability.is_active:
+    if move.get_attack_type() == fire and attacker.ability.name == 'Flash Fire' and attacker.ability.is_active:
         return 1.5
     else:
         return 1

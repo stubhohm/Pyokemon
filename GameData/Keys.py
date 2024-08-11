@@ -1,12 +1,15 @@
-# user inputs
-up, down, left, right = 'up', 'down', 'left', 'right'
-directional_inputs = [up, down, left, right]
-select, cancel = 'select', 'cancel'
-
 # Battle Actions
 fight, run, swap, item = 'Fight', 'Run', 'Swap', 'Item'
 combat_inputs = [fight, swap, item, run]
 default, moves, output_info = 'defualt', 'moves', 'output info'
+
+# user inputs
+up, down, left, right = 'up', 'down', 'left', 'right'
+directional_inputs = [up, down, left, right]
+select, cancel = 'select', 'cancel'
+idle, walk, surfing, jump = 'idle', 'walk', 'surfing', 'jump'
+movement_types = [walk, idle, run, jump]
+
 
 # Bag Pockets
 item_pocket, ball_pocket, key_item_pocket, tmhm_pocket, berries_pocket = 'Items', 'Balls', 'Key Items', 'TMs and HMs', 'Berries'
@@ -36,6 +39,7 @@ active_status = 'actvie status'
 paralysis, poisoned, badly_poisoned = 'paralysis', 'poisoned', 'badly poisoned'
 burned, frozen, confused, in_love = 'burned', 'frozen', 'confused', 'in love'
 flinched, asleep, taunted, tormented = 'flinched', 'asleep', 'taunted', 'tormented'
+vortex, imprisoned = 'vortex', 'imprisoned'
 multiple = 'multiple'
 status_applied_text = {paralysis: 'was parlized',
                        poisoned: 'was poisoned',
@@ -45,7 +49,8 @@ status_applied_text = {paralysis: 'was parlized',
                        confused: 'became confused',
                        in_love: 'fell in love',
                        flinched: 'flinched',
-                       asleep: 'was put to sleep'}
+                       asleep: 'was put to sleep',
+                       vortex: 'was trapped in the vortex'}
 
 # Natures
 increase, decrease = 'increase', 'decrease'
@@ -60,7 +65,7 @@ exit, leave = 'exit', 'leave'
 
 # Actor types
 player, wild, npc = 'player', 'wild', 'npc'
-male, female = 'boy', 'girl'
+male, female = 'male', 'female'
 double_battle = 'double battle'
 
 # Inventory Terms
@@ -71,6 +76,7 @@ sandstorm, hailing, raining, harsh_sunlight, no_weather, active_weather = 'Sand 
 
 # Special Situation terms
 underwater, underground, in_air, minimized = 'underwater', 'underground', 'in_air', 'minimized'
+all_situations = 'all situations'
 
 # Healing Item names
 potion, max_potion, hyper_potion, super_potion, unnamed = 'Potion', 'Max Potion', 'Hyper Potion', 'Super Potion', 'unnamed'

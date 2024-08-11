@@ -11,7 +11,7 @@ from ..Keys import up, down, left, right, directional_inputs
 from ..Keys import moves, default
 from ..Keys import description, quant
 from ..Keys import t_all, t_ally, t_enemy, t_enemy_side, t_self, t_self_side
-from ..Keys import taunted, tormented
+from ..Keys import taunted, tormented, imprisoned
 from ..Constants import terminal_font_size
 from ..Colors import black
 
@@ -30,23 +30,28 @@ class PlayerCombatInput():
         selecting_move = True
         is_taunted = False
         is_tormented = False
+        is_imprisoned = False
         for effect in player.active.stats.lingering_effects:
             if effect.name == taunted:
                 is_taunted = True
             if effect.name == tormented:
                 is_tormented = True
+            if effect.name == imprisoned:
+                is_imprisoned = True
         while selecting_move:
             if player.check_for_struggle():
                 return mvstruggle()
             selected_move = player.active.moves.select_move()
             if not selected_move or selected_move == cancel:
                 return cancel
-            elif selected_move.points == 0:
+            elif selected_move.get_pp() == 0:
                 self.print_to_terminal('You cannot select a move with no remaining PP.')
             elif is_taunted and selected_move.type == status:
                 self.print_to_terminal('You cannot select a status move due to taunt.')
             elif is_tormented and selected_move == player.active.stats.last_attack:
                 self.print_to_terminal('You cannot select the same move again while tormented.')
+            elif is_imprisoned and selected_move in self.enemy.active.moves.move_list:
+                self.print_to_terminal('You cannot select a move the enemy knows.')
             else:
                 return selected_move
         return False
@@ -249,6 +254,7 @@ class PlayerCombatInput():
     def get_target(self, move:Attack, npcs:list[ActorBattleInfo], player:ActorBattleInfo):
         creature_list = None
         if len(npcs) == 1:
+            self.enemy = npcs[0]
             creature_list = [npcs[0].active]
         elif move.target in (t_enemy_side, t_all):
             creature_list = [npcs[0].active, npcs[1].active]

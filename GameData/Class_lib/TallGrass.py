@@ -7,45 +7,55 @@ class TallGrass():
     def __init__(self, name:str) -> None:
         self.name = name
         self.coordinates = []
+        self.encounter_trigger_rate = 25
         self.make_blank_encounter_list()
         
     def make_blank_encounter_list(self):
         self.encounter_list:list = []
-        for i in range(0,100):
-            self.encounter_list.append(None)
 
     def add_coordinates(self, array):
         self.coordinates = array
 
-    def add_pokemon(self, Creature_fx, lvl_range:list[int], rng_ranges:list[int]):
+    def add_pokemon(self, Creature_fx, lvl_range:list[int], encounter_chance:float):
         '''
         Takes an instance function, list with level ranges, and a list of two numbers between 0 and 100 for encounter chance.  
         '''
-        lower, upper = rng_ranges[0], rng_ranges[-1]
-        encounter = {pokemon: Creature_fx,
+        pokemon_encounter = {pokemon: Creature_fx,
                      level_range: lvl_range}
-        for i in range(lower, upper):
-            self.encounter_list[i] = encounter
+        encounter = (pokemon_encounter, encounter_chance)
+        self.encounter_list.append(encounter)
 
     def select_level(self, range:list[int]):
         '''
         Randomly picks a level within the given range.
         '''
         lower, upper = range[0], range[-1]
+        if lower == upper:
+            return lower
         return random.randrange(lower, upper)
 
     def generate_wild_encounter(self):
         '''
         Randomly picks a pokemon from encounter array
         '''
-        rng = rand100()
-        active_encounter = self.encounter_list[rng]
+        encounter_dicts, encounter_chance = zip(*self.encounter_list)
+        total_chances = sum(encounter_chance)
+        weights = [p / total_chances for p in encounter_chance]
+        active_encounter = random.choices(encounter_dicts, weights, k=1)[0]
+        print('active encounter')
+        print(active_encounter)
         if not active_encounter:
             return
         level = self.select_level(active_encounter[level_range])
         creature = active_encounter[pokemon](level)
-
         if type(creature) == Creature:
+            print(f'Encountered a wild {creature.name}')
+            print(f'Level: {creature.stats.leveling.level}')
+            print(f'Nature: {creature.stats.nature}')
+            print(f'IVs: {creature.stats.iv_dict}')
+            print(f'Stats: {creature.stats.active_value}')
+            print(f'{self.encounter_list}')
+            return
             return creature
 
     def check_for_encounter(self):
@@ -54,7 +64,6 @@ class TallGrass():
         '''
         rng = rand100()
         wild_pokemon = None
-        print(rng)
-        if rng < 0:
+        if rng <= self.encounter_trigger_rate:
             wild_pokemon = self.generate_wild_encounter()
         return wild_pokemon

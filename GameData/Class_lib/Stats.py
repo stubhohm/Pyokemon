@@ -46,7 +46,8 @@ class Stats():
         self.protected = False
         self.moved = False
         self.special_situation = None
-        self.lingering_effects.clear_effect()
+        for effect in self.lingering_effects:
+            effect.clear_effect()
 
     def print_to_terminal(self, text):
         ui.display.active.battle_terminal.slow_print(text, terminal_font_size, black)

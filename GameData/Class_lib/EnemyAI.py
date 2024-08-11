@@ -3,7 +3,7 @@ from .Inventory import Inventory
 from .Attack import Attack
 from ..Move_List.moves import mvstruggle
 from ..Keys import t_ally, t_enemy, t_enemy_side, t_self, t_self_side
-from ..Keys import status, taunted, tormented
+from ..Keys import status, taunted, tormented, imprisoned
 from ..Keys import hp
 from ..Function_Lib.General_Functions import random, rand85_100, rand100, rand256
 from ..Function_Lib.Combat_Fx import get_attack_typing_multiplier
@@ -18,11 +18,13 @@ class EnemyAI():
     def is_valid_move(self, move:Attack, active:Creature):
         if not move:
             return False
-        if move.points == 0:
+        if move.attributes.points == 0:
             return False
         if self.is_taunted and move.type == status:
             return False
         if self.is_tormented and active.stats.last_attack == move:
+            return False
+        if self.is_imprisoned and move in active.moves.move_list:
             return False
         return True
 
@@ -33,11 +35,11 @@ class EnemyAI():
         for move in active.moves.move_list:
             if not self.is_valid_move(move):
                 continue
-            if not move.modifiying_stat:
+            if not move.stat_attributes.modifiying_stat:
                 continue
             if not (move.target == t_self_side or move.target == t_self):
                 continue
-            if active.stats.modifiers[move.modifiying_stat] > 0:
+            if active.stats.modifiers[move.stat_attributes.modifiying_stat] > 0:
                 continue
             self_buff_move = move
             break
@@ -104,11 +106,14 @@ class EnemyAI():
     def set_torment_and_taunt(self, active:Creature):
         self.is_taunted = False
         self.is_tormented = False
+        self.is_imprisoned = False
         for effect in active.stats.lingering_effects:
             if effect.name == taunted:
                 self.is_taunted = True
             if effect.name == tormented:
                 self.is_tormented = True
+            if effect.name == imprisoned:
+                self.is_imprisoned = True
 
     def get_npc_action(self, npc:ActorBattleInfo, player_active:Creature):
         remaining_hp = npc.active.stats.get_remaining_hp()
@@ -136,9 +141,9 @@ class EnemyAI():
             move = move_list[rng]
             if not move:
                 continue
-            if move and move.points > 0:
+            if move and move.get_pp() > 0:
                 break
             loop +=1
-        if not move or move.points == 0:
+        if not move or move.get_pp() == 0:
             move = mvstruggle()
         return move

@@ -1,5 +1,7 @@
 from ...Keys import npc
-from ...Creatures.Wurmple_Line.Full import instance_wurmple, instance_cascoon, instance_silcoon, instance_dustox, instance_beautifly
+from ...Creatures.Wurmple_Line.Full import instance_wurmple
+from ...Creatures.Poochyena_Line.Full import instance_poochyena
+from ...Creatures.Zigzagoon_Line.Full import instance_zigzagoon
 from ...Function_Lib.Generate_Trainers import generate_bug_trainers
 from ...Class_lib.TallGrass import TallGrass
 from ...Class_lib.Route import Route
@@ -12,12 +14,12 @@ from .TransitionArrays import oldale_entry, oldale_start_position
 
 
 def make_grass():
-    easy_grass = TallGrass('Easy Grass')
-    easy_grass.add_pokemon(instance_cascoon, [10,12], [0,30])
-    easy_grass.add_pokemon(instance_silcoon, [10,12], [31,60])
-    easy_grass.add_pokemon(instance_wurmple, [3,7], [61,100])
-    easy_grass.add_coordinates(tall_grass_array)
-    return easy_grass
+    grass = TallGrass('Route 101 Grass')
+    grass.add_pokemon(instance_zigzagoon, [2,3], 10)
+    grass.add_pokemon(instance_poochyena, [2,3], 45)
+    grass.add_pokemon(instance_wurmple, [2,3], 45)
+    grass.add_coordinates(tall_grass_array)
+    return grass
 
 
 def generate_route():

@@ -41,8 +41,8 @@ def generate_area():
     route_103.add_adjacent_area(oldale_town)
     
 
-    start_area.set_active_area(starting_town)
-    start_area.active.starting_position = (10,10)
+    start_area.set_active_area(route_102)
+    start_area.active.navigation.starting_position = (40,10)
 
     return start_area
 
