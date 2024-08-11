@@ -1,3 +1,4 @@
+from ..Constants import trianer_battles_off, gymleader_battles_off
 from ..Keys import no_weather, hp
 from ..Function_Lib.General_Functions import try_again, get_confirmation
 from .ActorBattleInfo import ActorBattleInfo
@@ -39,6 +40,9 @@ class LocalTrainers():
         print('')
 
     def engage_leader(self, player:ActorBattleInfo):
+        if gymleader_battles_off:
+            print('gym leader battles are toggled off')
+            return
         print('')
         if self.gym_leader.white_out:
             print('You have defeated the leader already.')
@@ -52,6 +56,9 @@ class LocalTrainers():
                 self.engage_trainer(player)
 
     def engage_trainer(self, player:ActorBattleInfo):
+        if trianer_battles_off:
+            print('trainer battles are toggled off')
+            return
         if self.is_gym and self.gym_leader.white_out:
             print('\nYou have defeated everyone in the area already.')
             return None

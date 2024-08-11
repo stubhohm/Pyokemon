@@ -21,3 +21,7 @@ step_distance = 32
 walk_speed_scale = 2
 
 FPS = 60
+
+wild_encounters_off = True
+trianer_battles_off = True
+gymleader_battles_off = True

@@ -1,5 +1,6 @@
 from ..Keys import no_weather, exit, leave
 from ..Keys import select, cancel, up, down, left, right
+from ..Keys import navigation, wild
 from ..Colors import black
 from ..Constants import step_distance, screen_size
 from ..Function_Lib.General_Functions import get_confirmation, try_again, rand100
@@ -107,6 +108,15 @@ class Town():
             if encounter:
                 return encounter
 
+    def battle_wild_pokemon(self, creature:Creature, player:Player):
+        player.update_battle_info()
+        wild_pokemon = ActorBattleInfo()
+        wild_pokemon.define_battle_info([creature], None, wild, '')
+        battle = Battle()
+        battle.define_battle_start(player.battle_info, [wild_pokemon], no_weather)
+        battle.battle_loop()
+        ui.display.set_screen_state(navigation)
+        ui.input.key_last = None
 
     def determine_encounter(self):
         '''

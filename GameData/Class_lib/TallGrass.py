@@ -1,4 +1,5 @@
 from ..Keys import pokemon, level_range, rng_range
+from ..Constants import wild_encounters_off
 from ..Function_Lib.General_Functions import random, rand100
 from .Creature import Creature
 from .Item import Item
@@ -7,7 +8,7 @@ class TallGrass():
     def __init__(self, name:str) -> None:
         self.name = name
         self.coordinates = []
-        self.encounter_trigger_rate = 25
+        self.encounter_trigger_rate = 10
         self.make_blank_encounter_list()
         
     def make_blank_encounter_list(self):
@@ -42,20 +43,13 @@ class TallGrass():
         total_chances = sum(encounter_chance)
         weights = [p / total_chances for p in encounter_chance]
         active_encounter = random.choices(encounter_dicts, weights, k=1)[0]
-        print('active encounter')
-        print(active_encounter)
         if not active_encounter:
             return
         level = self.select_level(active_encounter[level_range])
         creature = active_encounter[pokemon](level)
         if type(creature) == Creature:
-            print(f'Encountered a wild {creature.name}')
-            print(f'Level: {creature.stats.leveling.level}')
-            print(f'Nature: {creature.stats.nature}')
-            print(f'IVs: {creature.stats.iv_dict}')
-            print(f'Stats: {creature.stats.active_value}')
-            print(f'{self.encounter_list}')
-            return
+            if wild_encounters_off:
+                print('wild encounters turned off')
             return creature
 
     def check_for_encounter(self):
