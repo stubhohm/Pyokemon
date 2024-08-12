@@ -42,7 +42,6 @@ class Attack():
         self.hits = 1
         self.end_on_miss = True
         
-
     def print_to_terminal(self, text):
         ui.display.active.battle_terminal.slow_print(text, terminal_font_size, black)
 
@@ -356,6 +355,17 @@ class Attack():
         self.attacker = attacker_stats
         attacker_stats.moved = True
 
+    def validate_hit(self):
+        if self.attacker.ability.truant_block():
+            return False
+        if self.check_status_block():
+            return False
+        if not (self.check_situation_hit() or self.check_attack_connection()):
+            return False
+        if not self.stat_attributes.meets_status_requirements(self.target):
+            return False
+        return True
+
     def use_move(self, target_stats:Stats, attacker_stats:Stats, weather:str):
         self.init_turn_variables(target_stats, attacker_stats, weather)
         self.attributes.points -= 1
@@ -363,13 +373,9 @@ class Attack():
         if self.target_is_protected():
             return hit_outcome
         for attempts in range(self.hits):
-            if self.attacker.ability.truant_block():
-                return hit_outcome
-            if self.check_status_block():
-                return hit_outcome
-            if not (self.check_situation_hit() or self.check_attack_connection()):
-                return hit_outcome
-            if not self.stat_attributes.meets_status_requirements(self.target):
+            if self.validate_hit():
+                hit_outcome = True
+            else:
                 return hit_outcome
             if hit_outcome:
                 if self.name == 'Razor Wind' and self.attacker.last_attack != self:
