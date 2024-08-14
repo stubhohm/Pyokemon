@@ -16,50 +16,50 @@ from GameData.Keys import player, wild, npc, exit
 from GameData.Keys import male, female
 
 # Defines player class and attributes
-player = Player('Stuart', male)
-player.set_inventory(Inventory())
-player.set_combat_inputs(PlayerCombatInput())
-player.pc = PC()
-player.inventory.add_healing_items(make_potion(), 3)
-player.inventory.add_status_items(make_antidote(), 2)
-player.inventory.add_healing_items(make_max_potion(), 1)
-player.inventory.add_capture_items(make_pokeball(), 6)
-player.set_roster()
+player_character = Player('Stuart', male)
+player_character.set_inventory(Inventory())
+player_character.set_combat_inputs(PlayerCombatInput())
+player_character.pc = PC()
+player_character.inventory.add_healing_items(make_potion(), 3)
+player_character.inventory.add_status_items(make_antidote(), 2)
+player_character.inventory.add_healing_items(make_max_potion(), 1)
+player_character.inventory.add_capture_items(make_pokeball(), 6)
+player_character.set_roster()
 dustox = instance_dustox(25)
 torchic = instance_torchic(15)
 wurmple = instance_wurmple(6)
-player.add_pokemon_to_roster(dustox)
-player.add_pokemon_to_roster(torchic)
-player.add_pokemon_to_roster(wurmple)
+player_character.add_pokemon_to_roster(dustox)
+player_character.add_pokemon_to_roster(torchic)
+player_character.add_pokemon_to_roster(wurmple)
 
-def look_for_pokemon_center(area:Town|Route, player):
+def look_for_pokemon_center(area:Town|Route, player_character:Player):
     for building in area.buildings:
         if not building.healing_station:
             continue
-        building.player = player
+        building.player = player_character
         building.heal_roster()
-        player.battle_info.white_out = False
+        player_character.battle_info.white_out = False
         print(f'You recovered at the nearby {building.name}.')
         return True
     return False
 
 def game_loop():
-    player.set_battle_info()
+    player_character.set_battle_info()
     area = generate_area()
-    while not player.battle_info.white_out:
+    while not player_character.battle_info.white_out:
         if not ui.input.is_playing:
             return False
         print('')
-        action = area.active.enter_area(player)
+        action = area.active.enter_area(player_character)
         if type(action) == Route or type(action) == Town:
             area.active = action
         if action == exit:
             return False
-    if look_for_pokemon_center(area.active, player):
+    if look_for_pokemon_center(area.active, player_character):
         return True
     else:
         for adj_area in area.active.adjacent_areas:
-            if look_for_pokemon_center(adj_area, player):
+            if look_for_pokemon_center(adj_area, player_character):
                 area.active = area
                 return True
     
