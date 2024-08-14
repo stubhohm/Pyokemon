@@ -26,6 +26,9 @@ class StatAttributes():
         self.status = status
         self.status_proc = status_proc
 
+    def set_stat_requirement(self, requirement:list[str]):
+        self.status_requirement = requirement
+
     def set_self_stat_change(self, stats:list[str], chance:int, change:int, reset = False):
         self.self_change_stats = stats
         self.self_change_value = change

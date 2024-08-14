@@ -11,3 +11,12 @@ class AttackAttributes():
         self.type = type
         self.contact = contact
         self.priority = 0
+
+    def get_base_power(self):
+        return self.base_power
+    
+    def set_base_power(self, value:int):
+        self.base_power = value
+
+    def set_attacker(self, attacker):
+        self.attacker = attacker

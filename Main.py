@@ -14,7 +14,6 @@ from GameData.Item_List.ItemsList import make_potion, make_max_potion, make_anti
 from GameData.Item_List.ItemsList import make_pokeball
 from GameData.Keys import player, wild, npc, exit
 from GameData.Keys import male, female
-from GameData.Test.GUITesting import mainfx
 
 # Defines player class and attributes
 player = Player('Stuart', male)

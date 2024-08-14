@@ -6,7 +6,7 @@ from ..Keys import t_field, t_self, t_enemy, t_ally, t_all, t_self_side, t_enemy
 from ..Keys import burned, poisoned, badly_poisoned, paralysis, confused, frozen, in_love, flinched, taunted, tormented, vortex
 from ..Keys import in_air, underground, underwater, minimized, all_situations
 from ..Keys import harsh_sunlight, hailing, raining
-
+from .Overwrite_functions import get_flail_base_power, false_swipe_damage_cap, miss_if_not_first_turn
 
 ###
 #PHYSCIAL MOVES
@@ -33,15 +33,21 @@ def mvexplosion():
 
 def mvfake_out():
     fake_out = PhysicalAttack('Fake Out', t_enemy, normal, 40, 10, 100)
-    fake_out.priority = 1
+    fake_out.attributes.priority = 1
     fake_out.stat_attributes.add_status(flinched, 100)
+    fake_out.passes_optional_hit_check = miss_if_not_first_turn.__get__(fake_out, PhysicalAttack)
     return fake_out
 
 def mvfalse_swipe():
-    return PhysicalAttack('False Swipe', t_enemy, normal, 40, 40, 100)
+    false_swipe =  PhysicalAttack('False Swipe', t_enemy, normal, 40, 40, 100)
+    false_swipe.optional_attack_function = false_swipe_damage_cap.__get__(false_swipe, PhysicalAttack)
+    return false_swipe
 
 def mvflail():
-    return PhysicalAttack('Flail', t_enemy, normal, 0, 15, 100)
+    flail =  PhysicalAttack('Flail', t_enemy, normal, 0, 15, 100)
+    flail.attributes.get_base_power = get_flail_base_power.__get__(flail, PhysicalAttack)
+    return flail
+
 
 def mvfury_swipes():
     fury_swipes = PhysicalAttack('Fury Swipes', t_enemy, normal, 18, 20, 80)
@@ -122,6 +128,7 @@ def mvearthquake():
     earthquake.attributes.contact = False
     earthquake.situation_bypass = underground
     earthquake.situation_damage = 2
+    return earthquake
 
 def mvmud_shot():
     mud_shot = PhysicalAttack('Mud Shot', t_enemy, ground, 55, 15, 95)
@@ -173,7 +180,7 @@ def mvbite():
 
 def mvcrunch():
     crunch = PhysicalAttack('Crunch', t_enemy, dark, 80, 15, 100)
-    crunch.set_foe_stat_change([defense], 20, -1)
+    crunch.stat_attributes.set_foe_stat_change([defense], 20, -1)
     return crunch
 
 def mvpursuit():
@@ -195,7 +202,7 @@ def mvastonish():
 def mvpoison_sting():
     poison_sting = PhysicalAttack('Poison Sting', t_enemy, poison, 15, 35, 100)
     poison_sting.stat_attributes.add_status(poisoned, 30)
-    poison_sting.contact = False
+    poison_sting.attributes.contact = False
     return poison_sting
 
 # Physical Dragon Moves

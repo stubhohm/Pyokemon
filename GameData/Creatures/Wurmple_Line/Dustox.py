@@ -5,6 +5,8 @@ from ...Keys import sp_defense
 from ...Ability_List.AbilityList import abshield_dust
 from ...Move_List.moves import mvconfusion, mvgust, mvprotect, mvmoonlight, mvpsybeam, mvwhirlwind, mvlight_screen, mvsilver_wind, mvtoxic
 
+from ...Move_List.moves import no_type
+
 def instance_dustox(level:int):
     dustox = Creature('Dustox')
     hpts = 60
@@ -39,6 +41,7 @@ def instance_dustox(level:int):
     levelup_moves[10] = [mvconfusion]
     levelup_moves[13] = [mvgust]
     levelup_moves[17] = [mvprotect]
+    levelup_moves[17] = []
     levelup_moves[20] = [mvmoonlight]
     levelup_moves[24] = [mvpsybeam]
     levelup_moves[27] = [mvwhirlwind]

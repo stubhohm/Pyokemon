@@ -142,7 +142,7 @@ def mvtail_whip():
 
 def mvwhirlwind():
     whirlwind = StatusAttack('Whirlwind', t_enemy, normal, 20, None)
-    whirlwind.priority = -6
+    whirlwind.attributes.priority = -6
     return whirlwind
 
 #Status Fire Moves:
@@ -198,7 +198,7 @@ def mvmirror_move():
 #Status Fighting Moves
 def mvbulk_up():
     bulk_up = StatusAttack('Bulk Up', t_self, fighting, 20, None)
-    bulk_up.set_self_stat_change([attack, defense], 100, 1)
+    bulk_up.stat_attributes.set_self_stat_change([attack, defense], 100, 1)
     return bulk_up
 
 def mvdetect():
@@ -270,4 +270,5 @@ def mvhaze():
 
 def mvmist():
     mist = StatusAttack('Mist', t_self_side, ice, 30, None)
+    # not implimented
     return mist

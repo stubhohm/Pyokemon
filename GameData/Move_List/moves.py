@@ -10,6 +10,7 @@ from .Physicalmoves import *
 from .Specialmoves import *
 from .Statusmoves import *
 
+
 ###
 #Struggle
 ###

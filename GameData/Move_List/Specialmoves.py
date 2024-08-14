@@ -96,7 +96,7 @@ def mvsilver_wind():
     stats = [attack, defense, sp_attack, sp_defense, speed]
     chance = 10
     increase = 1
-    silver_wind.set_self_stat_change(stats, chance, increase)
+    silver_wind.stat_attributes.set_self_stat_change(stats, chance, increase)
     return silver_wind
 
 # Special Flying Moves

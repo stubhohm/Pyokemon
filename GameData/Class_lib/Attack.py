@@ -51,9 +51,9 @@ class Attack():
         self.consecutive_success = 0
 
     def compound(self):
-        self.base_power = self.base_power ** self.consecutive_success
-        if self.base_power > self.base_power_cap:
-            self.base_power = self.base_power_cap
+        self.set_base_power(self.attributes.get_base_power() ** self.consecutive_success)
+        if self.attributes.get_base_power() > self.base_power_cap:
+            self.attributes.set_base_power(self.base_power_cap) 
             
     def diminishing_attack(self, rate:float):
         self.diminishing = True
@@ -86,12 +86,8 @@ class Attack():
         attack_type = self.attributes.element
         return attack_type
 
-    def false_swipe(self, damage:int):
-        if self.name != 'False Swipe':
-            return damage
-        if self.target.active_value[hp] > damage:
-            return damage
-        return int(self.target.active_value[hp] - 1)
+    def optional_attack_function(self, damage:int):
+        return damage
 
     def set_weather_modify(self, weather:str, proc_chance:int):
         self.target_weather = weather
@@ -106,7 +102,7 @@ class Attack():
 
     def check_crit(self,):
         value = rand100() + self.attacker.active_value[crit_ratio]
-        if value < self.attributes.crit and self.attributes.base_power != 0:
+        if value < self.attributes.crit and self.attributes.get_base_power() != 0:
             if self.target.ability.check_crit_immunity():
                 text = f'{self.target.ability.name} negated the effects of a critical hit!'
                 self.print_to_terminal(text)
@@ -145,7 +141,7 @@ class Attack():
         if not status.is_active:
             return False
         if self.stat_attributes.check_confusion_block(status, self.attacker):
-            damage = int(self.get_base_damage(self.attacker, self.attacker, False)) * -1
+            damage = int(self.get_base_damage()) * -1
             self.attacker.change_hp(damage)
             return True
         if self.stat_attributes.check_paralysis_block(status, self.attacker):
@@ -164,24 +160,8 @@ class Attack():
             defense_stat = defense
         return attack_stat, defense_stat
 
-    def get_flail_damage(self, n:int):
-        if n < 5:
-            self.attributes.base_power = 200
-        elif n < 11:
-            self.attributes.base_power = 150
-        elif n < 21:
-            self.attributes.base_power = 100
-        elif n < 36:
-            self.attributes.base_power = 80
-        elif n < 69: # nice
-            self.attributes.base_power = 40
-        else:
-            self.attributes.base_power = 20 
-
-    def get_base_damage(self, situation_hit:bool):
-        if self.name == 'Flail':
-            self.get_flail_damage(self.attacker.get_remaining_hp())
-        if self.attributes.base_power == 0:
+    def get_base_damage(self):
+        if self.attributes.get_base_power() == 0:
             return 0
         level_value = ((2 * self.attacker.leveling.level) / 5) + 2
         attack_stat, defense_stat = self.get_attack_types()
@@ -189,8 +169,8 @@ class Attack():
             defense_stat = defense_stat * 1.5
         attack_defence_ratio = float(self.attacker.active_value[attack_stat] / self.target.active_value[defense_stat])
         pinch_multiplier = self.attacker.ability.check_for_in_a_pinch(self.attacker.get_remaining_hp(), self.attributes.element)
-        base_damage = float(level_value * self.attributes.base_power * pinch_multiplier * attack_defence_ratio / 50)
-        if situation_hit:
+        base_damage = float(level_value * self.attributes.get_base_power() * pinch_multiplier * attack_defence_ratio / 50)
+        if self.check_situation_hit():
             base_damage = float(base_damage * self.situation_damage)
         return base_damage
 
@@ -234,11 +214,11 @@ class Attack():
                 return 2
         return 1
 
-    def deal_damage(self,situation_hit:bool):
+    def get_damage(self):
         '''
         Returns attack damage as a negative number in hit points of damage delt.
         '''
-        base_damage = self.get_base_damage(situation_hit)
+        base_damage = self.get_base_damage()
         if base_damage == 0:
             return 0
         burn = self.stat_attributes.get_burned_mod(self.attacker)
@@ -262,19 +242,24 @@ class Attack():
         critical = self.check_crit()
         main_damage = base_damage * burn * targets * weather_multiplier + 2
         damage = int(main_damage * critical * doubledmg * stab * typing * rng85_100)
-        damage = self.false_swipe(damage)
+        damage = self.optional_attack_function(damage)
         damage *= -1
         return damage
 
     def add_protection(self):
         self.protection = True
 
-    def check_attack_connection(self):
-        hit = self.check_hit(self.target.modifiers[evasion], self.attacker.modifiers[evasion], self.attacker.last_attack, self.target.special_situation)
-        if self.name == 'Fake Out' and self.target.moved:
+    def passes_optional_hit_check(self):
+        if self.target.moved:
             text = f'{self.name} Failed!'
             self.print_to_terminal(text)
             return False
+        return True
+
+    def check_attack_connection(self):
+        if not self.passes_optional_hit_check():
+            return False
+        hit = self.check_hit(self.target.modifiers[evasion], self.attacker.modifiers[evasion], self.attacker.last_attack, self.target.special_situation)
         if not hit:
             text = f'{self.name} missed!'
             self.print_to_terminal(text)
@@ -339,8 +324,8 @@ class Attack():
             self.print_to_terminal(text)
             return False
 
-    def resolve_hit(self, situation_hit:bool):
-        damage = self.deal_damage(situation_hit)
+    def resolve_hit(self):
+        damage = self.get_damage()
         self.target.ability.check_absorb_or_negate(self, damage, self.target)
         self.target.change_hp(damage)
         self.hp_attributes.check_self_hp_change(damage, self.attacker)
@@ -352,6 +337,7 @@ class Attack():
     def init_turn_variables(self, target_stats:Stats, attacker_stats:Stats, weather:str):
         self.weather = weather
         self.target = target_stats
+        self.attributes.attacker = attacker_stats
         self.attacker = attacker_stats
         attacker_stats.moved = True
 
@@ -394,7 +380,7 @@ class Attack():
                             self.target.change_hp(damage * 2)
                     else:
                         self.attacker.last_attack = self
-                    self.resolve_hit(self.check_situation_hit())    
+                    self.resolve_hit()    
                 hit_outcome = True
                 self.attacker.protected = self.protection
                 self.diminish()
