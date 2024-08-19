@@ -23,6 +23,7 @@ class Navigation():
     def define_navigation(self, player:Player, map:Sprite):
         self.player = player
         self.map = map
+        self.player.get_animation_start()
 
     def set_player_start_pos(self):
         setup = True
@@ -52,6 +53,7 @@ class Navigation():
             self.player.active_sprite.jump_image()
         print('finished y')
         self.reset_velocity()
+        self.player.get_animation_start()
 
     def move_sprites(self):
         self.map.move_image()

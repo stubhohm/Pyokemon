@@ -250,10 +250,6 @@ class Attack():
         self.protection = True
 
     def passes_optional_hit_check(self):
-        if self.target.moved:
-            text = f'{self.name} Failed!'
-            self.print_to_terminal(text)
-            return False
         return True
 
     def check_attack_connection(self):

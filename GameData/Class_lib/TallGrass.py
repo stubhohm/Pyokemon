@@ -39,6 +39,9 @@ class TallGrass():
         '''
         Randomly picks a pokemon from encounter array
         '''
+        if not wild_encounters_on:
+            print('wild encounters turned off')
+            return None
         encounter_dicts, encounter_chance = zip(*self.encounter_list)
         total_chances = sum(encounter_chance)
         weights = [p / total_chances for p in encounter_chance]
@@ -48,8 +51,6 @@ class TallGrass():
         level = self.select_level(active_encounter[level_range])
         creature = active_encounter[pokemon](level)
         if type(creature) == Creature:
-            if not wild_encounters_on:
-                print('wild encounters turned off')
             return creature
 
     def check_for_encounter(self):

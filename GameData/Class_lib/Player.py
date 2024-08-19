@@ -24,6 +24,7 @@ class Player():
         self.movement_type = idle
         self.last_direction = down
         self.steps = 0
+        self.step_off_set = 0
         self.pixels = 0
         self.active_sprite = Sprite(f'{self.name} Sprite', 2)
         self.set_sprite_library()
@@ -45,8 +46,11 @@ class Player():
     def set_active_image(self, image:Surface):
         self.active_sprite.image = image
 
+    def get_frame_steps(self):
+        return self.steps + self.step_off_set
+
     def update_player_sprite(self):
-        frame = self.active_sprite.get_current_frame(self.steps)
+        frame = self.active_sprite.get_current_frame(self.get_frame_steps())
         image_array = self.get_image_array()
         self.set_active_image(image_array[frame])
 
@@ -56,7 +60,10 @@ class Player():
             self.steps += 1
             self.pixels = 0
         if self.pixels % (step_distance / 8) == 0:
-            self.update_player_sprite
+            self.update_player_sprite()
+
+    def reset_pixel(self):
+        self.pixels = 0
 
     def reset_steps(self):
         self.steps = 0
@@ -77,13 +84,17 @@ class Player():
             return self.movement_type
 
     def get_animation_start(self):
-        frame = 1
+        frame = self.active_sprite.get_current_frame(self.get_frame_steps())
+        self.pixels = 0
         while not frame == 0:
-            self.incriment_steps()
-            frame = self.active_sprite.get_current_frame(self.steps)
+            self.step_off_set += 1
+            self.step_off_set = self.step_off_set % self.active_sprite.frames_in_loop
+            frame = self.active_sprite.get_current_frame(self.get_frame_steps())
 
     def set_movement_type(self, movement_type):
         if movement_type not in movement_types:
+            return
+        elif self.movement_type == movement_type:
             return
         elif self.movement_type not in movement_types:
             self.movement_type = idle
@@ -92,7 +103,7 @@ class Player():
         self.active_sprite.set_animation_loop(len(self.get_image_array()))
         is_jumping = (self.movement_type == jump)
         self.active_sprite.set_jumping(is_jumping)
-        if is_jumping:
+        if self.movement_type in [jump]:
             self.get_animation_start()
 
     def set_last_direction(self, direction):
