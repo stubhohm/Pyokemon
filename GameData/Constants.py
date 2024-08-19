@@ -22,6 +22,6 @@ walk_speed_scale = 2
 
 FPS = 60
 
-wild_encounters_on = False
+wild_encounters_on = True
 trianer_battles_on = False
 gymleader_battles_on = False
