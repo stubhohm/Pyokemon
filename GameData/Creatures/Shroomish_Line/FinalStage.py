@@ -1,28 +1,28 @@
 from ...Class_lib.Creature import Creature
-from ...Ability_List.AbilityList import abchlorophyll as ability_1
-from ...Ability_List.AbilityList import abair_lock as ability_2
+from ...Ability_List.AbilityList import abeffect_spore as ability_1
+from ...Ability_List.AbilityList import abeffect_spore as ability_2
 from ...Ability_List.AbilityList import abair_lock as hidden_ability
-from ...Keys import medium_slow as leveling_type
+from ...Keys import fluctuating as leveling_type
 from ...Keys import grass as p_type
-from ...Keys import no_type as s_type
+from ...Keys import fighting as s_type
 from ...Keys import attack as ev
 from ...Function_Lib.General_Functions import rand100
-from ...Move_List.moves import *
+from ...Move_List.moves import mvabsorb, mvleech_seed, mvstun_spore, mvtackle, mvmega_drain, mvhead_butt, mvmach_punch, mvcounter, mvsky_uppercut, mvmind_reader, mvdynamic_punch
 
 def instance_creature(level:int):
-    name = 'Final'
+    name = 'Breloom'
     pokemon = Creature(name)
     
-    hp = 90
-    attack = 100
-    defense = 60
-    sp_attack = 90
+    hp = 60
+    attack = 130
+    defense = 80
+    sp_attack = 60
     sp_defense = 60
-    speed = 80
+    speed = 70
     
-    base_exp = 216
-    catch_rate = 45
-    evs = {ev: 3}
+    base_exp = 165
+    catch_rate = 90
+    evs = {ev: 2}
     
     evolve_level = 101
     evolution = None
@@ -51,15 +51,15 @@ def instance_creature(level:int):
 
 def set_levelup_moves():
     levelup_moves = [None] * 100
-    levelup_moves[1] = [mvgrowl, mvtackle]
-    levelup_moves[6] = [mvmud_slap]
-    levelup_moves[10] = [mvwater_gun]
-    levelup_moves[15] = [mvbide]
-    levelup_moves[19] = [mvforesight]
-    levelup_moves[24] = [mvmud_sport]
-    levelup_moves[28] = [mvtake_down]
-    levelup_moves[33] = [mvwhirlpool]
-    levelup_moves[37] = [mvprotect]
-    levelup_moves[42] = [mvhydro_pump]
-    levelup_moves[46] = [mvendeavor]
+    levelup_moves[1] = [mvabsorb, mvleech_seed, mvstun_spore, mvtackle]
+    levelup_moves[4] = [mvtackle]
+    levelup_moves[7] = [mvstun_spore]
+    levelup_moves[10] = [mvleech_seed]
+    levelup_moves[16] = [mvmega_drain]
+    levelup_moves[22] = [mvhead_butt]
+    levelup_moves[23] = [mvmach_punch]
+    levelup_moves[28] = [mvcounter]
+    levelup_moves[36] = [mvsky_uppercut]
+    levelup_moves[45] = [mvmind_reader]
+    levelup_moves[42] = [mvdynamic_punch]
     return levelup_moves

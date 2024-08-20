@@ -6,6 +6,7 @@ from ..Constants import terminal_font_size
 from ..Function_Lib.General_Functions import rand100
 from .Stats import Stats
 from .Status import Status
+from .LingeringEffect import LingeringEffect
 from .UI import ui
 
 
@@ -65,9 +66,16 @@ class StatAttributes():
             return True
         return False
 
-    def check_confusion_block(self, status:Status, attacker:Stats):
+    def check_confusion_block(self, lingering_effects:list[LingeringEffect], attacker:Stats):
+        status = None
+        for effect in lingering_effects:
+            if type(effect) != LingeringEffect:
+                continue
+            if effect.name == confused:
+                status = effect
+                break
         rng = rand100()
-        if status.name == confused:
+        if status:
             text = f'{attacker.name} is {status.name}.'
             self.print_to_terminal(text)
         if status.name == confused and rng > 50:

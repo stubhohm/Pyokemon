@@ -1,28 +1,28 @@
 from ...Class_lib.Creature import Creature
-from ...Ability_List.AbilityList import abchlorophyll as ability_1
-from ...Ability_List.AbilityList import abair_lock as ability_2
+from ...Ability_List.AbilityList import abguts as ability_1
+from ...Ability_List.AbilityList import abguts as ability_2
 from ...Ability_List.AbilityList import abair_lock as hidden_ability
 from ...Keys import medium_slow as leveling_type
-from ...Keys import grass as p_type
-from ...Keys import no_type as s_type
-from ...Keys import attack as ev
+from ...Keys import normal as p_type
+from ...Keys import flying as s_type
+from ...Keys import speed as ev
 from ...Function_Lib.General_Functions import rand100
-from ...Move_List.moves import *
+from ...Move_List.moves import mvgrowl, mvpeck, mvfocus_energy, mvquick_attack, mvwing_attack, mvdouble_team, mvendeavor, mvaerial_ace, mvagility
 
 def instance_creature(level:int):
-    name = 'Final'
+    name = 'Swellow'
     pokemon = Creature(name)
     
-    hp = 90
-    attack = 100
+    hp = 60
+    attack = 85
     defense = 60
-    sp_attack = 90
-    sp_defense = 60
-    speed = 80
+    sp_attack = 50
+    sp_defense = 50
+    speed = 125
     
-    base_exp = 216
+    base_exp = 162
     catch_rate = 45
-    evs = {ev: 3}
+    evs = {ev: 2}
     
     evolve_level = 101
     evolution = None
@@ -51,15 +51,12 @@ def instance_creature(level:int):
 
 def set_levelup_moves():
     levelup_moves = [None] * 100
-    levelup_moves[1] = [mvgrowl, mvtackle]
-    levelup_moves[6] = [mvmud_slap]
-    levelup_moves[10] = [mvwater_gun]
-    levelup_moves[15] = [mvbide]
-    levelup_moves[19] = [mvforesight]
-    levelup_moves[24] = [mvmud_sport]
-    levelup_moves[28] = [mvtake_down]
-    levelup_moves[33] = [mvwhirlpool]
-    levelup_moves[37] = [mvprotect]
-    levelup_moves[42] = [mvhydro_pump]
-    levelup_moves[46] = [mvendeavor]
+    levelup_moves[1] = [mvgrowl, mvpeck, mvfocus_energy, mvquick_attack]
+    levelup_moves[4] = [mvfocus_energy]
+    levelup_moves[8] = [mvquick_attack]
+    levelup_moves[13] = [mvwing_attack]
+    levelup_moves[19] = [mvdouble_team]
+    levelup_moves[28] = [mvendeavor]
+    levelup_moves[38] = [mvaerial_ace]
+    levelup_moves[49] = [mvagility]
     return levelup_moves

@@ -28,6 +28,18 @@ def mvdouble_team():
     double_team.stat_attributes.set_self_stat_change([evasion], 100,  1)
     return double_team
 
+def mvencore():
+    encore = StatusAttack('Encore', t_enemy, normal, 5, 100)
+    # Not implimented
+    return encore
+
+def mvendure():
+    endure = StatusAttack('Endure', t_self, normal, 10, None)
+    endure.diminishing_attack(1/2)
+    endure.attributes.priority = 3
+    # need to impliment enduring hit
+    return endure
+
 def mvflash():
     flash = StatusAttack('Flash', t_enemy, normal, 20, 100)
     flash.stat_attributes.set_foe_stat_change([accuracy], 100, -1)
@@ -67,6 +79,11 @@ def mvleer():
     leer = StatusAttack('Leer', t_enemy, normal, 30, 100)
     leer.stat_attributes.set_foe_stat_change([defense], 100, -1)
     return leer
+
+def mvmind_reader():
+    mind_reader = StatusAttack('Mind Reader', t_self, normal, 5, 100)
+    # Not implimented, next move 100% accuracy
+    return mind_reader
 
 def mvmoonlight():
     moonlight = StatusAttack('Moonlight', t_self, normal, 5, None)
@@ -114,6 +131,11 @@ def mvscreech():
     screech.stat_attributes.set_foe_stat_change([defense], 100, -2)
     return screech
 
+def mvslack_off():
+    slack_off = StatusAttack('Slack Off', t_self, normal, 10, None)
+    slack_off.hp_attributes.set_static_hp_change(50)
+    return slack_off
+
 def mvswagger():
     swagger = StatusAttack('Swagger', t_enemy, normal, 15, 90)
     swagger.stat_attributes.set_foe_stat_change([attack], 100, 2)
@@ -145,6 +167,11 @@ def mvwhirlwind():
     whirlwind.attributes.priority = -6
     return whirlwind
 
+def mvyawn():
+    yawn = StatusAttack('Yawn', t_enemy, normal, 10, None)
+    yawn.lingering_effect.define_lingering_effect(asleep, None, [1,3])
+    return yawn
+
 #Status Fire Moves:
 def mvsunny_day():
     sunny_day = StatusAttack('Suny Day', t_field, fire, 5, None)
@@ -152,6 +179,17 @@ def mvsunny_day():
     return sunny_day
 
 # Status Grass Moves:
+def mvleech_seed():
+    leech_seed = StatusAttack('Leech Seed', t_enemy_side, grass, 10, 90)
+    leech_seed.lingering_effect.define_lingering_effect('Leech Seed', True, [3,5])
+    # HP restore not fully implimented
+    return leech_seed
+
+def mvspore():
+    spore = StatusAttack('Spore', t_enemy, grass, 15, 100)
+    spore.stat_attributes.add_status(asleep, 100)
+    return spore
+
 def mvstun_spore():
     stun_spore = StatusAttack('Stun Spore', t_enemy, grass, 30, 75)
     stun_spore.stat_attributes.add_status(paralysis, 100)
@@ -213,7 +251,17 @@ def mvtoxic():
     toxic.stat_attributes.add_status(badly_poisoned, 100)
     return toxic
 
+def mvpoison_powder():
+    poison_powder = StatusAttack('Poison Powder', t_enemy, poison, 35, 75)
+    poison_powder.stat_attributes.add_status(poison, 100)
+    return poison_powder
+
 #Status Psychic Moves
+def mvamnesia():
+    amnesia = StatusAttack('Anmesia', t_self, psychic, 20, None)
+    amnesia.stat_attributes.set_self_stat_change([sp_defense], 100, 2)
+    return amnesia
+
 def mvagility():
     agility = StatusAttack('Agility', t_self, psychic, 30, None)
     agility.stat_attributes.set_self_stat_change([speed], 100, 2)

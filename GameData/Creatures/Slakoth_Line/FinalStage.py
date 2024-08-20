@@ -1,26 +1,26 @@
 from ...Class_lib.Creature import Creature
-from ...Ability_List.AbilityList import abchlorophyll as ability_1
-from ...Ability_List.AbilityList import abair_lock as ability_2
-from ...Ability_List.AbilityList import abair_lock as hidden_ability
-from ...Keys import medium_slow as leveling_type
-from ...Keys import grass as p_type
+from ...Ability_List.AbilityList import abtruant as ability_1
+from ...Ability_List.AbilityList import abtruant as ability_2
+from ...Ability_List.AbilityList import abtruant as hidden_ability
+from ...Keys import slow as leveling_type
+from ...Keys import normal as p_type
 from ...Keys import no_type as s_type
-from ...Keys import attack as ev
+from ...Keys import hp as ev
 from ...Function_Lib.General_Functions import rand100
-from ...Move_List.moves import *
+from ...Move_List.moves import mvencore, mvscratch, mvslack_off, mvyawn, mvfeint_attack, mvamnesia, mvcovet, mvswagger, mvcounter, mvflail
 
 def instance_creature(level:int):
-    name = 'Final'
+    name = 'Slaking'
     pokemon = Creature(name)
     
-    hp = 90
-    attack = 100
-    defense = 60
-    sp_attack = 90
-    sp_defense = 60
-    speed = 80
+    hp = 150
+    attack = 160
+    defense = 100
+    sp_attack = 95
+    sp_defense = 65
+    speed = 100
     
-    base_exp = 216
+    base_exp = 285
     catch_rate = 45
     evs = {ev: 3}
     
@@ -51,15 +51,13 @@ def instance_creature(level:int):
 
 def set_levelup_moves():
     levelup_moves = [None] * 100
-    levelup_moves[1] = [mvgrowl, mvtackle]
-    levelup_moves[6] = [mvmud_slap]
-    levelup_moves[10] = [mvwater_gun]
-    levelup_moves[15] = [mvbide]
-    levelup_moves[19] = [mvforesight]
-    levelup_moves[24] = [mvmud_sport]
-    levelup_moves[28] = [mvtake_down]
-    levelup_moves[33] = [mvwhirlpool]
-    levelup_moves[37] = [mvprotect]
-    levelup_moves[42] = [mvhydro_pump]
-    levelup_moves[46] = [mvendeavor]
+    levelup_moves[1] = [mvscratch, mvyawn, mvslack_off, mvscratch]
+    levelup_moves[7] = [mvencore]
+    levelup_moves[13] = [mvslack_off]
+    levelup_moves[19] = [mvfeint_attack]
+    levelup_moves[25] = [mvamnesia]
+    levelup_moves[31] = [mvcovet]
+    levelup_moves[36] = [mvswagger]
+    levelup_moves[37] = [mvcounter]
+    levelup_moves[43] = [mvflail]
     return levelup_moves

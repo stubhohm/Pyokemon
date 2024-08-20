@@ -78,7 +78,7 @@ def mvgiga_drain():
 
 def mvleaf_blade():
     leaf_blade = SpecialAttack('Leaf Blade', t_enemy, grass, 70, 15, 100)
-    leaf_blade.crit = 1/8
+    leaf_blade.crit = 12
     leaf_blade.contact = True
     return leaf_blade
 
@@ -115,13 +115,13 @@ def mvthunder_bolt():
 # Special Psychic Moves
 def mvconfusion():
     confusion = SpecialAttack('Confusion', t_enemy, psychic, 50, 25, 100)
-    confusion.stat_attributes.add_status(confused, 10)
+    confusion.lingering_effect.define_lingering_effect(confused, False, [1,4])
     return confusion
 
 def mvdream_eater():
     dream_eater = SpecialAttack('Dream Eater', t_enemy, psychic, 100, 15, 100)
     dream_eater.hp_attributes.set_damage_scaled_modifier(0.50)
-    dream_eater.stat_attributes.status_requirement = [asleep]
+    dream_eater.stat_attributes.set_stat_requirement([asleep])
     return dream_eater
 
 def mvextrasensory():
@@ -136,7 +136,7 @@ def mvfuture_sight():
 
 def mvpsybeam():
     psybeam = SpecialAttack('Psybeam', t_enemy, psychic, 65, 20, 100)
-    psybeam.stat_attributes.add_status(confused, 10)
+    psybeam.lingering_effect.define_lingering_effect(confused, False, [1, 4])
     return psybeam
 
 def mvpsychic():

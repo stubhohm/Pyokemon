@@ -6,7 +6,8 @@ from ..Keys import t_field, t_self, t_enemy, t_ally, t_all, t_self_side, t_enemy
 from ..Keys import burned, poisoned, badly_poisoned, paralysis, confused, frozen, in_love, flinched, taunted, tormented, vortex
 from ..Keys import in_air, underground, underwater, minimized, all_situations
 from ..Keys import harsh_sunlight, hailing, raining
-from .Overwrite_functions import get_flail_base_power, false_swipe_damage_cap, miss_if_not_first_turn
+from .Overwrite_functions import get_flail_base_power, get_counter_base_power
+from .Overwrite_functions import false_swipe_damage_cap, miss_if_not_first_turn
 
 ###
 #PHYSCIAL MOVES
@@ -153,19 +154,54 @@ def mvpin_missile():
     return pin_missile
 
 # Physical Flying Moves
+def mvaerial_ace():
+    return PhysicalAttack('Aerial Ace', t_enemy, flying, 60, 20, None)
+
 def mvpeck():
     return PhysicalAttack('Peck', t_enemy, flying, 35, 35, 100)
 
+def mvwing_attack():
+    return PhysicalAttack('Wing Attack', t_enemy, flying, 60, 35, 100)
+
 # Physcial Fighting Moves
+def mvcounter():
+    counter = PhysicalAttack('Counter', t_enemy, fighting, None, 20, 100)
+    counter.attributes.priority = -5
+    counter.attributes.get_base_power = get_counter_base_power.__get__(counter, PhysicalAttack)
+    return counter
+
 def mvdouble_kick():
     double_kick = PhysicalAttack('Double Kick', t_enemy, fighting, 30, 30, 100)
     double_kick.set_multihit(2)
     return double_kick
 
+def mvdynamic_punch():
+    dynamic_punch = PhysicalAttack('Dynamic Punch', t_enemy, fighting, 100, 5, 50)
+    dynamic_punch.lingering_effect.define_lingering_effect(confused, False, [1, 4])
+    return dynamic_punch
+
+def mvfocus_punch():
+    focus_punch = PhysicalAttack('Focus Punch', t_enemy, fighting, 150, 20, 100)
+    focus_punch.attributes.priority = -3
+    # Need to impliment focus breaking
+    return focus_punch
+
+def mvmach_punch():
+    mach_punch = PhysicalAttack('Mach Punch', t_enemy, fighting, 40, 30, 100)
+    mach_punch.attributes.priority = 1
+    return mach_punch
+
+def mvreversal():
+    reversal = PhysicalAttack('Reversal', t_enemy, fighting, None, 15, 100)
+    reversal.attributes.get_base_power = get_flail_base_power.__get__(reversal, PhysicalAttack)
+    return reversal
+
 def mvsky_uppercut():
     sky_uppercut = PhysicalAttack('Sky Uppercut', t_enemy, fighting, 85, 15, 90)
     sky_uppercut.situation_bypass = in_air
     return sky_uppercut
+
+
 
 # Physical Thunder Moves
 def mvthunder_fist():
