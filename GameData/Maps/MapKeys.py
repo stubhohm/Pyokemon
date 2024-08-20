@@ -1,9 +1,0 @@
-G = 'Tall Grass'
-W = 'Wall'
-D = 'Door'
-T = 'Trainer'
-L = 'Gym Leader'
-P = 'PC'
-C = 'NPC'
-n = None
-A = 'Next Area'

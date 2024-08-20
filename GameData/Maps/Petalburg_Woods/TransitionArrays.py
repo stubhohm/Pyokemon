@@ -1,0 +1,6 @@
+south_east_entry = [(12, 18), (13,18)]
+south_west_entry = [(12, 18), (13,18)]
+north_route_104_start = [(15, 0), (16, 0)]
+north_entry = [(10, -1), (11, -1), (12, -1), (13, -1)]
+south_east_route_104_start = [(10,10)]
+south_west_route_104_start = [(10,10)]
