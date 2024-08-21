@@ -1,1 +1,1 @@
-water_dict = {(40, 0): True, (40, 1): True, (40, 2): True, (40, 3): True, (40, 4): True, (41, 0): True, (41, 1): True, (41, 2): True, (41, 3): True, (41, 4): True, (42, 0): True, (42, 1): True, (42, 2): True, (42, 3): True, (42, 4): True, (43, 0): True, (43, 1): True, (43, 2): True, (43, 3): True, (43, 4): True, (44, 2): True, (44, 3): True, (44, 4): True, (45, 2): True, (45, 3): True, (45, 4): True}
+water_dict = {}

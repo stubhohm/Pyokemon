@@ -1,1 +1,1 @@
-blocked_spaces_dict = []
+blocked_spaces_dict = {}

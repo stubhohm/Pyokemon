@@ -1,1 +1,1 @@
-tall_grass_dict = []
+tall_grass_dict = {}

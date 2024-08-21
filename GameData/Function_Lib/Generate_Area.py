@@ -18,7 +18,7 @@ from ..Maps.Petalburg_Woods.area import generate_route as generate_petalburg_woo
 
 def generate_area():
     start_area = Area('Starting Area')
-    starting_town = generate_littleroot_town()
+    littleroot_town = generate_littleroot_town()
     oldale_town = generate_oldale_town()
 
     petalburg_woods = generate_petalburg_woods()
@@ -28,7 +28,7 @@ def generate_area():
     route_103 = generate_route_103()
     route_104_s = generate_route_104_south()
     
-    starting_town.add_route(route_101)
+    littleroot_town.add_route(route_101)
     
     # Add Routes to the towns
     oldale_town.add_route(route_101)
@@ -38,7 +38,7 @@ def generate_area():
     
 
     # Add Towns to Routes
-    route_101.add_adjacent_area(starting_town)
+    route_101.add_adjacent_area(littleroot_town)
     route_101.add_adjacent_area(oldale_town)
 
     route_102.add_adjacent_area(oldale_town)
@@ -51,7 +51,7 @@ def generate_area():
     route_103.add_adjacent_area(oldale_town)
     
 
-    start_area.set_active_area(route_104_s)
+    start_area.set_active_area(littleroot_town)
     start_area.active.navigation.starting_position = (10,10)
 
     return start_area

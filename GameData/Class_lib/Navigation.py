@@ -33,6 +33,8 @@ class Navigation():
         self.map.pos.x, self.map.pos.y = 0, 0
         self.player.active_sprite.x, self.player.active_sprite.y = 0, 0
         starting_position = self.starting_position
+        print(f'Start pos: {self.starting_position}')
+        sum_x, sum_y = 0, 0
         while not (self.get_coordinate()[0] == starting_position[0]):
             if (self.get_coordinate()[0] > starting_position[0]):
                 mod = -1
@@ -40,6 +42,8 @@ class Navigation():
                 mod = 1
             else:
                 mod = 0
+            sum_x += mod
+            print(sum_x)
             self.handle_x_movement(mod, setup)
             self.map.jump_image()
             self.player.active_sprite.jump_image()
@@ -51,6 +55,8 @@ class Navigation():
                 mod = 1
             else:
                 mod = 0
+            sum_y += mod
+            print(sum_y)
             self.handle_y_movement(mod, setup)
             self.map.jump_image()
             self.player.active_sprite.jump_image()
@@ -98,6 +104,7 @@ class Navigation():
 
     def handle_x_movement(self, x:int, setup = False):
         screen_width = screen_size[0]
+        screen_height = screen_size[1]
         half_step = step_distance / 2
         horizontal_pin = False
         self.reset_velocity()
@@ -110,12 +117,14 @@ class Navigation():
             if not setup:
                 self.player.set_last_direction(right)
         player_off_center = not((screen_width / 2 - half_step) <= self.player.active_sprite.pos.x <= (screen_width / 2 + half_step))
+        player_off_screen = (self.player.active_sprite.pos.x > screen_width or self.player.active_sprite.pos.y > screen_height)
         if horizontal_pin or player_off_center:
             self.player.active_sprite.set_velocity(x, 0)
         else:
             self.map.set_velocity(x, 0)
 
     def handle_y_movement(self, y:int, setup = False):
+        screen_width = screen_size[0]
         screen_height = screen_size[1]
         half_step = step_distance / 2
         vertical_pin = False
@@ -129,7 +138,8 @@ class Navigation():
             if not setup:
                 self.player.set_last_direction(down)
         player_off_center = not((screen_height / 2 - half_step) <= self.player.active_sprite.pos.y <= (screen_height / 2 + half_step))
-        if vertical_pin or player_off_center:
+        player_off_screen = (self.player.active_sprite.pos.x > screen_width or self.player.active_sprite.pos.y > screen_height)
+        if (vertical_pin or player_off_center) and not player_off_screen:
             self.player.active_sprite.set_velocity(0, y)
         else:
             self.map.set_velocity(0, y)
