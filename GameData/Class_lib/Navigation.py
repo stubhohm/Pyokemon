@@ -1,4 +1,5 @@
 from ..Constants import step_distance, screen_size
+from ..Constants import ghost_mode
 from ..Colors import black
 from ..Keys import exit, leave, cancel
 from ..Keys import up, down, left, right, directional_inputs
@@ -181,7 +182,7 @@ class Navigation():
         coords =  self.get_coordinate()
         target_coords = self.get_coordinate_plus_one(coords)
         target_coords_1 = self.get_coordinate_plus_one(target_coords)
-        if target_coords in self.blocked_spaces:
+        if self.blocked_spaces.get(target_coords, False) and not ghost_mode:
             self.player.set_movement_type(idle)
             self.player.update_player_sprite()
             return
@@ -193,7 +194,7 @@ class Navigation():
                 self.player.movement_type = idle
                 self.jump_ledge()
         
-        if self.ledges.get(target_coords, False):
+        if self.ledges.get(target_coords, False) and not ghost_mode:
             if not self.ledge_tops.get(self.get_coordinate(), False):
                 self.player.set_movement_type(idle)
                 self.player.update_player_sprite()
