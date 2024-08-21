@@ -64,6 +64,7 @@ class TallGrass():
         '''
         rng = rand100()
         wild_pokemon = None
+        print(self.name)
         if rng <= self.encounter_trigger_rate:
             wild_pokemon = self.generate_wild_encounter()
         return wild_pokemon

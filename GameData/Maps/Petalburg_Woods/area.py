@@ -43,5 +43,5 @@ def generate_route():
 
     transition_dict = {}
     transition_dict['Route 104 South'] = [south_route_104_entry, south_route_104_start]
-    
+    route.define_area_transitions(transition_dict)
     return route
