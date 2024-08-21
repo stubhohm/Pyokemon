@@ -25,4 +25,4 @@ FPS = 60
 wild_encounters_on = False
 trianer_battles_on = False
 gymleader_battles_on = False
-ghost_mode = False
+ghost_mode = True

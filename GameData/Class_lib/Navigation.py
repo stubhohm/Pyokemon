@@ -21,9 +21,9 @@ class Navigation():
         self.water_spaces = {}
         self.transition_dict:dict = {}
         self.switch_area = False
-        self.switch_area = False
         self.starting_position:list[tuple[int,int]] = (0,0) 
-        
+        self.ghost_mode = ghost_mode
+
     def define_navigation(self, player:Player, map:Sprite):
         self.player = player
         self.map = map
@@ -182,7 +182,7 @@ class Navigation():
         coords =  self.get_coordinate()
         target_coords = self.get_coordinate_plus_one(coords)
         target_coords_1 = self.get_coordinate_plus_one(target_coords)
-        if self.blocked_spaces.get(target_coords, False) and not ghost_mode:
+        if self.blocked_spaces.get(target_coords, False) and not self.ghost_mode:
             self.player.set_movement_type(idle)
             self.player.update_player_sprite()
             return
@@ -194,7 +194,7 @@ class Navigation():
                 self.player.movement_type = idle
                 self.jump_ledge()
         
-        if self.ledges.get(target_coords, False) and not ghost_mode:
+        if self.ledges.get(target_coords, False) and not self.ghost_mode:
             if not self.ledge_tops.get(self.get_coordinate(), False):
                 self.player.set_movement_type(idle)
                 self.player.update_player_sprite()
@@ -271,6 +271,12 @@ class Navigation():
             print(self.constructed_dict)
         if key_input == 't':
             self.print_coordinates_lists()
+        if key_input == 'g':
+            self.ghost_mode = (not self.ghost_mode)
+            if self.ghost_mode:
+                print("Ghost mode on.")
+            else:
+                print("Ghost mode off.")
 
     def navigate_area(self):
         ui.display.active.window.fill(black)
