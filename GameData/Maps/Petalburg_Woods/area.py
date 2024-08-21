@@ -8,8 +8,10 @@ from ...Function_Lib.Generate_Trainers import generate_bug_trainers
 from ...Class_lib.TallGrass import TallGrass
 from ...Class_lib.Route import Route
 from ...Sprites.MapComponents.Sprites import generate_petalbug_wood_map as generate_route_map
-from .ValidationArrays import blocked_spaces
-from .TallGrassArrays import Tall_Grass_Array
+from .ValidationArrays import blocked_spaces_dict
+from .TallGrassArrays import tall_grass_dict
+from .LedgeArrays import ledge_dict, ledge_tops_dict
+from .TransitionArrays import south_route_104_entry, south_route_104_start
 
 def make_easy_grass():
     grass = TallGrass('Petalburg Grass')
@@ -20,7 +22,7 @@ def make_easy_grass():
     grass.add_pokemon(instance_silcoon, [5], 10)
     grass.add_pokemon(instance_taillow, [5, 6], 5)
     grass.add_pokemon(instance_slakoth, [5, 6], 5)
-    grass.add_coordinates(Tall_Grass_Array)
+    grass.add_coordinates(tall_grass_dict)
     return grass
 
 def generate_route():
@@ -35,5 +37,11 @@ def generate_route():
     
     map = generate_route_map()
     route.set_sprite(map)
-    route.define_blocked_spaced(blocked_spaces)
+    route.define_blocked_spaced(blocked_spaces_dict)
+    route.define_ledge_tops(ledge_tops_dict)
+    route.define_ledges(ledge_dict)
+
+    transition_dict = {}
+    transition_dict['Route 104 South'] = [south_route_104_entry, south_route_104_start]
+    
     return route

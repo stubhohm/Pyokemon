@@ -11,10 +11,13 @@ from .UI import ui
 class Navigation():
     def __init__(self) -> None:
         self.adjacent_areas = []
-        self.blocked_spaces = []
-        self.ledges = []
-        self.ledge_tops = []
-        self.water_spaces = []
+        self.constructed_dict = {}
+        self.top_left = ()
+        self.bottom_right = ()
+        self.blocked_spaces = {}
+        self.ledges = {}
+        self.ledge_tops = {}
+        self.water_spaces = {}
         self.transition_dict:dict = {}
         self.switch_area = False
         self.switch_area = False
@@ -154,6 +157,8 @@ class Navigation():
         for key in self.transition_dict.keys():
             value:list[list] = self.transition_dict[key]
             if target_coords in value[0]:
+                print(f'Target: {target_coords}')
+                print(key)
                 index = value[0].index(target_coords)
                 return self.select_new_area(value[1][index], key)
 
@@ -170,7 +175,7 @@ class Navigation():
             self.player.set_movement_type(idle)
             self.player.update_player_sprite()
             return
-        if target_coords in self.water_spaces:
+        if self.water_spaces.get(target_coords, False):
             if not self.player.movement_type == surfing:
                 return
         else:
@@ -178,13 +183,13 @@ class Navigation():
                 self.player.movement_type = idle
                 self.jump_ledge()
         
-        if target_coords in self.ledges:
-            if self.get_coordinate() not in self.ledge_tops:
+        if self.ledges.get(target_coords, False):
+            if not self.ledge_tops.get(self.get_coordinate(), False):
                 self.player.set_movement_type(idle)
                 self.player.update_player_sprite()
                 print('not at a ledgetop')
                 return
-            if target_coords_1 in self.blocked_spaces or target_coords_1 in self.ledges:
+            if self.blocked_spaces.get(target_coords_1, False) or self.ledges.get(target_coords_1, False):
                 self.player.set_movement_type(idle)
                 self.player.update_player_sprite()
                 print('target space is blocked')
@@ -196,6 +201,65 @@ class Navigation():
     def jump_ledge(self):
         self.player.set_movement_type(jump)
         self.map.set_jumping(True)
+
+    def print_coordinate_list(self, name, coords):
+        if self.blocked_spaces.get(coords, False):
+            print(f'{name} is in blocked.')
+        if self.ledges.get(coords, False):
+            print(f'{name} is in ledges.')
+        if self.ledge_tops.get(coords, False):
+            print(f'{name} is in ledge tops.')
+        if self.water_spaces.get(coords, False):
+            print(f'{name} is in water space.')
+
+    def print_coordinates_lists(self):
+        coord_names = ['Current Position', 'Target', 'Target + 1']
+        coords =  self.get_coordinate()
+        target_coords = self.get_coordinate_plus_one(coords)
+        target_coords_1 = self.get_coordinate_plus_one(target_coords)
+        coord_list = [coords, target_coords, target_coords_1]
+        for i, name in enumerate(coord_names):
+            self.print_coordinate_list(name, coord_list[i])
+
+    def add_to_dict(self):
+        print('adding')
+        ui.input.get_player_input()
+        if not self.top_left or not self.bottom_right:
+            return
+        bottom = self.top_left[1]
+        top = self.bottom_right[1]
+        left = self.top_left[0]
+        right = self.bottom_right[0]
+        print(right)
+        print(left)
+        print(bottom)
+        print(top)
+        for x in range(left, right + 1):
+            for y in range(bottom, top + 1):
+                coords = (x,y)
+                if self.constructed_dict.get(coords, False):
+                    continue
+                print(coords)
+                self.constructed_dict[coords] = True
+        print('finished adding set')
+        self.top_left = None
+        self.bottom_right = None
+
+    def map_area_helper_function(self, key_input):
+        if key_input == 'm':
+            self.add_to_dict()
+        if key_input == 'a':
+            self.top_left = self.get_coordinate()
+            print(self.top_left)
+        if key_input == 's':
+            self.bottom_right = self.get_coordinate()
+            print(self.bottom_right)
+        if key_input == 'c':
+            self.constructed_dict = {}
+        if key_input == 'p':
+            print(self.constructed_dict)
+        if key_input == 't':
+            self.print_coordinates_lists()
 
     def navigate_area(self):
         ui.display.active.window.fill(black)
@@ -214,6 +278,9 @@ class Navigation():
             return leave
         if action == cancel:
             return exit
+        if not action in directional_inputs:
+            self.map_area_helper_function(action)
+            return False
         x, y = self.determine_velocity(action)        
         if x != 0 or y != 0:
             action = self.handle_movement(x,y)

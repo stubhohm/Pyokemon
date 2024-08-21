@@ -4,24 +4,24 @@ from ...Function_Lib.Generate_Trainers import generate_bug_trainers
 from ...Class_lib.TallGrass import TallGrass
 from ...Class_lib.Route import Route
 from ...Sprites.MapComponents.Sprites import generate_route_104_South_map as generate_route_map
-from .ValidationArrays import blocked_spaces
-from .TallGrassArrays import tall_grass_array
-from .LedgeArrays import ledge_array
-from .TransitionArrays import west_entry, west_town_start
-from .TransitionArrays import oldale_entry, oldale_start_position
+from .ValidationDicts import blocked_spaces_dict
+from .TallGrassDicts import tall_grass_dict
+from .LedgeDicts import ledge_dict, ledge_tops_dict
+from .TransitionArrays import east_entry, route_102_start
+from .TransitionArrays import petalburg_woods_entry, petalburg_woods_start
 
 
 def make_grass():
     easy_grass = TallGrass('Easy Grass')
-    easy_grass.add_pokemon(instance_cascoon, [10,12], [0,30])
-    easy_grass.add_pokemon(instance_silcoon, [10,12], [31,60])
-    easy_grass.add_pokemon(instance_wurmple, [3,7], [61,100])
-    easy_grass.add_coordinates(tall_grass_array)
+    easy_grass.add_pokemon(instance_cascoon, [10,12], 30)
+    easy_grass.add_pokemon(instance_silcoon, [10,12], 30)
+    easy_grass.add_pokemon(instance_wurmple, [3,7], 40)
+    easy_grass.add_coordinates(tall_grass_dict)
     return easy_grass
 
 
 def generate_route():
-    route = Route('Route 102')   
+    route = Route('Route 104 South')   
     
     tall_grass = make_grass()
     
@@ -32,9 +32,10 @@ def generate_route():
 
     map = generate_route_map()
     route.set_sprite(map)
-    route.define_blocked_spaced(blocked_spaces)
-    route.define_ledges(ledge_array)
-    transition_dict = {'Littleroot Town' : [west_entry, west_town_start]}
-    transition_dict['Oldale Town'] = [oldale_entry, oldale_start_position]
+    route.define_blocked_spaced(blocked_spaces_dict)
+    route.define_ledges(ledge_dict)
+    route.define_ledge_tops(ledge_tops_dict)
+    transition_dict = {'Route 102' : [east_entry, route_102_start]}
+    transition_dict['Petalburg Woods'] = [petalburg_woods_entry, petalburg_woods_start]
     route.define_area_transitions(transition_dict)
     return route

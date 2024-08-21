@@ -13,15 +13,20 @@ from ..Maps.Oldale_Town.area import generate_town as generate_oldale_town
 from ..Maps.Route_101.area import generate_route as generate_route_101
 from ..Maps.Route_102.area import generate_route as generate_route_102
 from ..Maps.Route_103.area import generate_route as generate_route_103
+from ..Maps.Route_104_South.area import generate_route as generate_route_104_south
+from ..Maps.Petalburg_Woods.area import generate_route as generate_petalburg_woods
 
 def generate_area():
     start_area = Area('Starting Area')
     starting_town = generate_littleroot_town()
     oldale_town = generate_oldale_town()
 
+    petalburg_woods = generate_petalburg_woods()
+
     route_101 = generate_route_101()
     route_102 = generate_route_102()
     route_103 = generate_route_103()
+    route_104_s = generate_route_104_south()
     
     starting_town.add_route(route_101)
     
@@ -37,12 +42,17 @@ def generate_area():
     route_101.add_adjacent_area(oldale_town)
 
     route_102.add_adjacent_area(oldale_town)
+    route_102.add_adjacent_area(route_104_s)
+    route_104_s.add_adjacent_area(route_102)
+    route_104_s.add_adjacent_area(petalburg_woods)
+    petalburg_woods.add_adjacent_area(route_104_s)
+
 
     route_103.add_adjacent_area(oldale_town)
     
 
-    start_area.set_active_area(route_102)
-    start_area.active.navigation.starting_position = (40,10)
+    start_area.set_active_area(route_104_s)
+    start_area.active.navigation.starting_position = (10,10)
 
     return start_area
 

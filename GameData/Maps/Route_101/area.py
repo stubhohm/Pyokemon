@@ -6,9 +6,9 @@ from ...Function_Lib.Generate_Trainers import generate_bug_trainers
 from ...Class_lib.TallGrass import TallGrass
 from ...Class_lib.Route import Route
 from ...Sprites.MapComponents.Sprites import generate_route_101_map as generate_route_map
-from .ValidationArrays import blocked_spaces
-from .TallGrassArrays import tall_grass_array
-from .LedgeArrays import ledge_array, ledge_tops
+from .ValidationDicts import blocked_spaces_dict
+from .TallGrassDicts import tall_grass_dict
+from .LedgeDicts import ledge_dict, ledge_tops_dict
 from .TransitionArrays import littleroot_entry, littleroot_start_position
 from .TransitionArrays import oldale_entry, oldale_start_position
 
@@ -18,7 +18,7 @@ def make_grass():
     grass.add_pokemon(instance_zigzagoon, [2,3], 10)
     grass.add_pokemon(instance_poochyena, [2,3], 45)
     grass.add_pokemon(instance_wurmple, [2,3], 45)
-    grass.add_coordinates(tall_grass_array)
+    grass.add_coordinates(tall_grass_dict)
     return grass
 
 
@@ -34,9 +34,9 @@ def generate_route():
 
     map = generate_route_map()
     route.set_sprite(map)
-    route.define_blocked_spaced(blocked_spaces)
-    route.define_ledges(ledge_array)
-    route.define_ledge_tops(ledge_tops)
+    route.define_blocked_spaced(blocked_spaces_dict)
+    route.define_ledges(ledge_dict)
+    route.define_ledge_tops(ledge_tops_dict)
     transition_dict = {'Littleroot Town' : [littleroot_entry, littleroot_start_position]}
     transition_dict['Oldale Town'] = [oldale_entry, oldale_start_position]
     route.define_area_transitions(transition_dict)

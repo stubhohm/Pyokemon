@@ -43,7 +43,12 @@ class TallGrass():
             print('wild encounters turned off')
             return None
         encounter_dicts, encounter_chance = zip(*self.encounter_list)
-        total_chances = sum(encounter_chance)
+        try:
+            total_chances = sum(encounter_chance)
+        except TypeError:
+            print(self.encounter_list)
+            print(encounter_chance)
+            return
         weights = [p / total_chances for p in encounter_chance]
         active_encounter = random.choices(encounter_dicts, weights, k=1)[0]
         if not active_encounter:

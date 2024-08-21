@@ -79,9 +79,9 @@ class Sprite(pSprite):
             position.x = 0
         if position.y * self.direction < 0:
             position.y = 0
-        if self.vertical_cap and (position.y * self.direction) < self.vertical_bound:
+        if self.vertical_cap and (position.y * self.direction * self.velocity.y) < self.vertical_bound:
             position.y = self.vertical_bound
-        if self.horizontal_cap and (position.x * self.direction) < self.horizontal_bound:
+        if self.horizontal_cap and (position.x * self.direction * self.velocity.x) < self.horizontal_bound:
                 position.x = self.horizontal_bound
         return position
 

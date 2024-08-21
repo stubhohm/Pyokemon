@@ -3,26 +3,26 @@ from ...Class_lib.Town import Town
 from ...Class_lib.ShopCounter import ShopCounter
 from ...Building_List.BuildingList import make_pokemart, make_pokemon_center, make_building
 from ...Sprites.MapComponents.Sprites import generate_oldale_town_map as generate_town_map
-from .ValidationArrays import blocked_spaces
-from .TallGrassArrays import tall_grass_array
+from .ValidationDict import blocked_spaces_dict
+from .TallGrassDict import tall_grass_dict
 from .TransitionArrays import route_101_entry, route_101_start
 from .TransitionArrays import route_102_entry, route_102_start
 from .TransitionArrays import route_103_entry, route_103_start
-from .LedgeArrays import ledge_array
+from .LedgeDict import ledge_dict
 
 def generate_town():
     town = Town('Oldale Town')   
 
     map = generate_town_map()
     town.set_sprite(map)
-    town.define_blocked_spaced(blocked_spaces)
+    town.define_blocked_spaced(blocked_spaces_dict)
     transition_dict = {}
     transition_dict['Route 101'] = [route_101_entry, route_101_start]
     transition_dict['Route 102'] = [route_102_entry, route_102_start]
     transition_dict['Route 103'] = [route_103_entry, route_103_start]
 
     town.define_area_transitions(transition_dict)
-    town.define_ledges(ledge_array)
+    town.define_ledges(ledge_dict)
     pokemon_center = make_pokemon_center('Oldale Pokemon Center')
     pokemon_center.door_coordinate_in = (6, 15)
     town.add_building(pokemon_center)

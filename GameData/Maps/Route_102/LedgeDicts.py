@@ -1,0 +1,2 @@
+ledge_dict = {(8, 11): True, (9, 11): True, (10, 11): True, (11, 11): True, (16, 4): True, (17, 4): True, (20, 4): True, (21, 4): True, (22, 4): True, (23, 4): True, (24, 4): True, (25, 4): True, (34, 2): True, (34, 3): True, (34, 4): True, (34, 5): True, (34, 6): True}
+ledge_tops_dict = {(33, 2): True, (33, 3): True, (33, 4): True, (33, 5): True, (16, 3): True, (17, 3): True, (8, 10): True, (9, 10): True, (20, 3): True, (21, 3): True, (22, 3): True, (23, 3): True, (24, 3): True, (25, 3): True}
