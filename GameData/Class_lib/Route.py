@@ -50,6 +50,9 @@ class Route():
     def define_ledge_tops(self, dict:dict):
         self.navigation.ledge_tops = dict
 
+    def define_water(self, dict:dict):
+        self.navigation.water_spaces = dict
+
     def draw_map(self):
         if not self.map:
             print('no map')
@@ -92,8 +95,6 @@ class Route():
         ui.display.set_screen_state(navigation)
         ui.input.key_last = None
 
-    
-        
 
     def enter_area(self, player:Player):
         text = f'Entering {self.name}'

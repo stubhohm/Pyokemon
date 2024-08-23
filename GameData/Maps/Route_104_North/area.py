@@ -1,27 +1,34 @@
 from ...Keys import npc
-from ...Creatures.Wurmple_Line.Full import instance_wurmple, instance_cascoon, instance_silcoon, instance_dustox, instance_beautifly
+from ...Creatures.Poochyena_Line.Full import instance_poochyena
+from ...Creatures.Wurmple_Line.Full import instance_wurmple
+from ...Creatures.Taillow_Line.Full import instance_taillow
+from ...Creatures.Marill_Line.Full import instance_marill
+from ...Creatures.Wingull_Line.Full import instance_wingull
 from ...Function_Lib.Generate_Trainers import generate_bug_trainers
 from ...Class_lib.TallGrass import TallGrass
 from ...Class_lib.Route import Route
 from ...Sprites.MapComponents.Sprites import generate_route_104_North_map as generate_route_map
-from .ValidationArrays import blocked_spaces
-from .TallGrassArrays import tall_grass_array
-from .LedgeArrays import ledge_array
-from .TransitionArrays import west_entry, west_town_start
-from .TransitionArrays import oldale_entry, oldale_start_position
+from .ValidationDict import blocked_spaces_dict
+from .TallGrassDict import tall_grass_dict
+from .WaterDict import water_dict
+from .LedgeDict import ledge_dict, ledge_tops_dict
+from .TransitionArrays import north_entry, north_start
+from .TransitionArrays import south_entry, south_start
 
 
 def make_grass():
-    easy_grass = TallGrass('Easy Grass')
-    easy_grass.add_pokemon(instance_cascoon, [10,12], [0,30])
-    easy_grass.add_pokemon(instance_silcoon, [10,12], [31,60])
-    easy_grass.add_pokemon(instance_wurmple, [3,7], [61,100])
-    easy_grass.add_coordinates(tall_grass_array)
-    return easy_grass
+    grass = TallGrass('Grass')
+    grass.add_pokemon(instance_poochyena, [4, 5], 40)
+    grass.add_pokemon(instance_marill, [4, 5], 20)
+    grass.add_pokemon(instance_wurmple, [4, 5], 20)
+    grass.add_pokemon(instance_taillow, [4, 5], 10)
+    grass.add_pokemon(instance_wingull, [3, 5], 10)
+    grass.add_coordinates(tall_grass_dict)
+    return grass
 
 
 def generate_route():
-    route = Route('Route 102')   
+    route = Route('Route 104 North')   
     
     tall_grass = make_grass()
     
@@ -32,9 +39,11 @@ def generate_route():
 
     map = generate_route_map()
     route.set_sprite(map)
-    route.define_blocked_spaced(blocked_spaces)
-    route.define_ledges(ledge_array)
-    transition_dict = {'Littleroot Town' : [west_entry, west_town_start]}
-    transition_dict['Oldale Town'] = [oldale_entry, oldale_start_position]
+    route.define_blocked_spaced(blocked_spaces_dict)
+    route.define_ledges(ledge_dict)
+    route.define_ledge_tops(ledge_tops_dict)
+    route.define_water(water_dict)
+    transition_dict = {'Rustboro City' : [north_entry, north_start]}
+    transition_dict['Petalburg Woods'] = [south_entry, south_start]
     route.define_area_transitions(transition_dict)
     return route

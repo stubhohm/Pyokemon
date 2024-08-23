@@ -60,6 +60,9 @@ class Town():
     def define_ledge_tops(self, array:list[tuple[int,int]]):
         self.navigation.ledge_tops = array
 
+    def define_water(self, dict:dict):
+        self.navigation.water_spaces = dict
+
     def draw_map(self):
         if not self.map:
             print('no map')

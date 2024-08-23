@@ -1,5 +1,9 @@
 from ...Keys import npc
-from ...Creatures.Wurmple_Line.Full import instance_wurmple, instance_cascoon, instance_silcoon, instance_dustox, instance_beautifly
+from ...Creatures.Poochyena_Line.Full import instance_poochyena
+from ...Creatures.Wurmple_Line.Full import instance_wurmple
+from ...Creatures.Taillow_Line.Full import instance_taillow
+from ...Creatures.Marill_Line.Full import instance_marill
+from ...Creatures.Wingull_Line.Full import instance_wingull
 from ...Function_Lib.Generate_Trainers import generate_bug_trainers
 from ...Class_lib.TallGrass import TallGrass
 from ...Class_lib.Route import Route
@@ -12,12 +16,14 @@ from .TransitionArrays import petalburg_woods_entry, petalburg_woods_start
 
 
 def make_grass():
-    easy_grass = TallGrass('Easy Grass')
-    easy_grass.add_pokemon(instance_cascoon, [10,12], 30)
-    easy_grass.add_pokemon(instance_silcoon, [10,12], 30)
-    easy_grass.add_pokemon(instance_wurmple, [3,7], 40)
-    easy_grass.add_coordinates(tall_grass_dict)
-    return easy_grass
+    grass = TallGrass('Grass')
+    grass.add_pokemon(instance_poochyena, [4, 5], 40)
+    grass.add_pokemon(instance_marill, [4, 5], 20)
+    grass.add_pokemon(instance_wurmple, [4, 5], 20)
+    grass.add_pokemon(instance_taillow, [4, 5], 10)
+    grass.add_pokemon(instance_wingull, [3, 5], 10)
+    grass.add_coordinates(tall_grass_dict)
+    return grass
 
 
 def generate_route():

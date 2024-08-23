@@ -12,12 +12,10 @@ from .TransitionArrays import oldale_entry, oldale_start_position
 
 
 def make_grass():
-    easy_grass = TallGrass('Easy Grass')
-    easy_grass.add_pokemon(instance_cascoon, [10,12], [0,30])
-    easy_grass.add_pokemon(instance_silcoon, [10,12], [31,60])
-    easy_grass.add_pokemon(instance_wurmple, [3,7], [61,100])
-    easy_grass.add_coordinates(tall_grass_dict)
-    return easy_grass
+    grass = TallGrass('Grass')
+    grass.add_pokemon(instance_cascoon, [10,12], 5)
+    grass.add_coordinates(tall_grass_dict)
+    return grass
 
 
 def generate_route():
@@ -34,6 +32,7 @@ def generate_route():
     route.set_sprite(map)
     route.define_blocked_spaced(blocked_spaces_dict)
     route.define_ledges(ledge_dict)
+    route.define_ledge_tops(ledge_tops_dict)
     transition_dict = {'Littleroot Town' : [west_entry, west_town_start]}
     transition_dict['Oldale Town'] = [oldale_entry, oldale_start_position]
     route.define_area_transitions(transition_dict)

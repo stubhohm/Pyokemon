@@ -12,6 +12,7 @@ from .ValidationArrays import blocked_spaces_dict
 from .TallGrassArrays import tall_grass_dict
 from .LedgeArrays import ledge_dict, ledge_tops_dict
 from .TransitionArrays import south_route_104_entry, south_route_104_start
+from .TransitionArrays import north_route_104_entry, north_route_104_start
 
 def make_easy_grass():
     grass = TallGrass('Petalburg Grass')
@@ -43,5 +44,6 @@ def generate_route():
 
     transition_dict = {}
     transition_dict['Route 104 South'] = [south_route_104_entry, south_route_104_start]
+    transition_dict['Route 104 North'] = [north_route_104_entry, north_route_104_start]
     route.define_area_transitions(transition_dict)
     return route
