@@ -9,7 +9,7 @@ from ...Function_Lib.Generate_Trainers import generate_bug_trainers
 from ...Class_lib.TallGrass import TallGrass
 from ...Class_lib.Route import Route
 from ...Class_lib.Building import Building
-from ...Sprites.MapComponents.Sprites import generate_route_102_map as generate_route_map
+from ...Sprites.MapComponents.MapImports import generate_route_102_map as generate_route_map
 from ...Sprites.MapComponents.TerrainItemsImports import get_image_array
 from .ValidationDict import blocked_spaces_dict
 from .TallGrassDicts import tall_grass_dict

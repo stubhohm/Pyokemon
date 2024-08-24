@@ -5,7 +5,7 @@ from ...Creatures.Zigzagoon_Line.Full import instance_zigzagoon
 from ...Function_Lib.Generate_Trainers import generate_bug_trainers
 from ...Class_lib.TallGrass import TallGrass
 from ...Class_lib.Route import Route
-from ...Sprites.MapComponents.Sprites import generate_route_101_map as generate_route_map
+from ...Sprites.MapComponents.MapImports import generate_route_101_map as generate_route_map
 from .ValidationDicts import blocked_spaces_dict
 from .TallGrassDicts import tall_grass_dict
 from .LedgeDicts import ledge_dict, ledge_tops_dict

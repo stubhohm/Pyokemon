@@ -12,6 +12,7 @@ def generate_petalbug_wood_map():
     petalburg_woods_map.invert_movement()
     return petalburg_woods_map
 
+# Littleroot Town and Littleroot specific Buildings
 
 def generate_littleroot_town_map():
     img_path = os.path.join(directory_path, town, 'Littleroot_Town.png')
@@ -19,6 +20,30 @@ def generate_littleroot_town_map():
     map.import_image(img_path)
     map.cap_both()
     map.invert_movement()
+    return map
+
+def generate_birchs_lab():
+    img_path = os.path.join(directory_path, building, 'Littleroot_Town','Birch_Lab.png')
+    map = Sprite("Birch's Lab", 2)
+    map.import_image(img_path)
+    map.cap_both()
+    map.lock_image()
+    return map
+
+def generate_rivals_house():
+    img_path = os.path.join(directory_path, building, 'Littleroot_Town','Rival_House_F1.png')
+    map = Sprite('Rival House', 2)
+    map.import_image(img_path)
+    map.cap_both()
+    map.lock_image()
+    return map
+
+def generate_players_house():
+    img_path = os.path.join(directory_path, building, 'Littleroot_Town','Player_House_F1.png')
+    map = Sprite('Player House', 2)
+    map.import_image(img_path)
+    map.cap_both()
+    map.lock_image()
     return map
 
 # Oldale Town and Oldale Specific Buildings

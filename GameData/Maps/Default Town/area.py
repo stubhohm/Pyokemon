@@ -5,7 +5,7 @@ from ...Class_lib.Town import Town
 from ...Class_lib.TallGrass import TallGrass
 from ...Class_lib.Building import Building
 from ...Building_List.BuildingList import make_building
-from ...Sprites.MapComponents.Sprites import generate_littleroot_town_map as generate_town_map
+from ...Sprites.MapComponents.MapImports import generate_littleroot_town_map as generate_town_map
 from .TransitionArrays import north_entry, north_start, east_entry, east_start
 from .TransitionArrays import west_entry, west_start, south_entry, south_start
 from .ValidationDict import blocked_spaces_dict

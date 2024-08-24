@@ -8,7 +8,7 @@ from ...Function_Lib.Generate_Trainers import generate_bug_trainers
 from ...Class_lib.TallGrass import TallGrass
 from ...Class_lib.Building import Building
 from ...Class_lib.Route import Route
-from ...Sprites.MapComponents.Sprites import generate_route_104_South_map as generate_route_map
+from ...Sprites.MapComponents.MapImports import generate_route_104_South_map as generate_route_map
 from ...Sprites.MapComponents.TerrainItemsImports import get_image_array
 from .ValidationDicts import blocked_spaces_dict
 from .TallGrassDicts import tall_grass_dict
@@ -60,11 +60,11 @@ def set_buildings(route:Route):
 def set_below_player_render_items(route:Route):
     img_name = 'RedFlowerbush'
     coords = [(31, 15), (31, 17)]
-    make_item_dict(route, img_name, coords, 4, 60, 1)
+    make_item_dict(route, img_name, coords, 4, 60, 0)
     coords = [(30, 16)]
-    make_item_dict(route, img_name, coords, 4, 60, 2)
+    make_item_dict(route, img_name, coords, 4, 60, 1)
     coords = [(30, 18), (31, 19)]
-    make_item_dict(route, img_name, coords, 4, 60, 3)
+    make_item_dict(route, img_name, coords, 4, 60, 2)
 
 # Below functions occur with no input after dictionaries and arrays are made in the other files
 

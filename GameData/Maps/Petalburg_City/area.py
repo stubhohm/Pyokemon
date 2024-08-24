@@ -5,7 +5,7 @@ from ...Class_lib.Town import Town
 from ...Class_lib.TallGrass import TallGrass
 from ...Class_lib.Building import Building
 from ...Building_List.BuildingList import make_building
-from ...Sprites.MapComponents.Sprites import generate_petalburg_city_map as generate_town_map
+from ...Sprites.MapComponents.MapImports import generate_petalburg_city_map as generate_town_map
 from ...Sprites.MapComponents.TerrainItemsImports import get_image_array
 from .TransitionArrays import north_entry, north_start, east_entry, east_start
 from .TransitionArrays import west_entry, west_start, south_entry, south_start

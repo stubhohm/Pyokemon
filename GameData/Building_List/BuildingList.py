@@ -4,7 +4,7 @@ from ..Class_lib.Building import Building
 from ..Class_lib.PC import PC
 from ..Class_lib.ShopCounter import ShopCounter
 from ..Class_lib.ActorBattleInfo import ActorBattleInfo
-from ..Sprites.MapComponents.Sprites import generate_pokemon_center_map, generate_pokemart_map
+from ..Sprites.MapComponents.MapImports import generate_pokemon_center_map, generate_pokemart_map
 from .NavigationDicts import pokemon_center_blocked_spaces_dict, pokemart_blocked_spaces_dict
 
 

@@ -174,6 +174,7 @@ class Building():
             return
         ui.display.active.set_player_sprite(self.player.active_sprite)
         self.map.draw(ui.display.active.window)
+        self.player.active_sprite.draw(ui.display.active.window)
         ui.display.active.update()
 
     def enter_building(self, player:Player):

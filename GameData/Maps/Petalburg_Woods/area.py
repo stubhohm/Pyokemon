@@ -7,7 +7,7 @@ from ...Creatures.Slakoth_Line.Full import instance_slakoth
 from ...Function_Lib.Generate_Trainers import generate_bug_trainers
 from ...Class_lib.TallGrass import TallGrass
 from ...Class_lib.Route import Route
-from ...Sprites.MapComponents.Sprites import generate_petalbug_wood_map as generate_route_map
+from ...Sprites.MapComponents.MapImports import generate_petalbug_wood_map as generate_route_map
 from .ValidationArrays import blocked_spaces_dict
 from .TallGrassArrays import tall_grass_dict
 from .LedgeArrays import ledge_dict, ledge_tops_dict
