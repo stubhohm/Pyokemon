@@ -1,7 +1,7 @@
 from ..Keys import route, wild, npc
 from ..Keys import exit, leave
 from ..Keys import no_weather
-from ..Keys import navigation, battle
+from ..Keys import navigation, battle, name, door_location
 from .Sprite import Sprite
 from .TallGrass import TallGrass
 from .Battle import Battle
@@ -25,6 +25,8 @@ class Route():
         self.adjacent_areas:list = []
         self.navigation = Navigation()
         self.weather = no_weather
+        self.draw_below_player:list[Sprite] = []
+        self.draw_above_player:list[Sprite] = []
 
     def set_sprite(self, sprite:Sprite):
         self.map = sprite
@@ -35,8 +37,23 @@ class Route():
     def add_trainer(self, trainer:ActorBattleInfo):
         self.trainers.add_trainer(trainer)
 
+    def add_building(self, building:Building):
+        self.buildings.append(building)
+        building_dict = { name: building.name,
+                         door_location: building.door_coordinate_in}
+        self.navigation.add_to_building_dicts(building_dict)
+
     def add_adjacent_area(self, area_class_object):
         self.navigation.adjacent_areas.append(area_class_object)
+
+    def add_to_draw_below_player(self, item_entry:dict):
+        item_name = item_entry[name]
+        sprite = Sprite(item_name, 2)
+        sprite.set_image_array(item_entry['images'])
+        sprite.set_sprite_coordinates(item_entry['coordinates'])
+        sprite.tickrate = item_entry['tick rate']
+        sprite.animation_frame = item_entry['offset']
+        self.draw_below_player.append(sprite)
 
     def define_area_transitions(self, transition_dict:dict):
         self.navigation.transition_dict = transition_dict
@@ -53,12 +70,30 @@ class Route():
     def define_water(self, dict:dict):
         self.navigation.water_spaces = dict
 
+    def draw_item_sprites(self, sprite:Sprite):
+        sprite.set_image_from_clock_ticks(self.ticks)
+        for position in sprite.image_coordinates:
+            sprite.jump_to_coordinate(position, self.map.pos)    
+            sprite.draw(ui.display.active.window)
+
+    def draw_items_above_player(self):
+        for sprite in self.draw_above_player:
+            self.draw_item_sprites(sprite)
+
+    def draw_items_below_player(self):
+        for sprite in self.draw_below_player:
+            self.draw_item_sprites(sprite)
+            
     def draw_map(self):
         if not self.map:
             print('no map')
             return
+        
         ui.display.active.set_player_sprite(self.player.active_sprite)
         self.map.draw(ui.display.active.window)
+        self.draw_items_below_player()
+        ui.display.active.draw_player()
+        self.draw_items_above_player()
         ui.display.active.update()
 
     def search_tall_grass(self):
@@ -83,7 +118,8 @@ class Route():
         if encounter:
             return encounter
         encounter = self.search_tall_grass()
-        return encounter
+        if encounter:
+            return encounter
 
     def battle_wild_pokemon(self, creature:Creature, player:Player):
         player.update_battle_info()
@@ -95,8 +131,8 @@ class Route():
         ui.display.set_screen_state(navigation)
         ui.input.key_last = None
 
-
     def enter_area(self, player:Player):
+        self.ticks = 0
         text = f'Entering {self.name}'
         print(text)
         self.player = player
@@ -105,9 +141,13 @@ class Route():
         self.constructed_array = []
         self.navigation.set_player_start_pos()
         while in_area:
+            self.ticks += 1
             self.draw_map()
             encounter = None
             action = self.navigation.navigate_area()
+            if self.ticks % 60 == 0:
+                self.ticks = 0
+            
             if action in [exit, leave]:
                 return action
             if action:

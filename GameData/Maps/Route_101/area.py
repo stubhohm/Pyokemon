@@ -41,3 +41,5 @@ def generate_route():
     transition_dict['Oldale Town'] = [oldale_entry, oldale_start_position]
     route.define_area_transitions(transition_dict)
     return route
+
+

@@ -7,7 +7,10 @@ from .PC import PC
 from .ShopCounter import ShopCounter
 from .Player import Player
 from .Battle import Battle
+from .Sprite import Sprite
+from .Navigation import Navigation
 from .LocalTrainers import LocalTrainers
+from .UI import ui
 
 class Building():
     def __init__(self, name:str) -> None:
@@ -18,11 +21,25 @@ class Building():
         self.healing_station = False
         self.shop_interface = False
         self.is_gym = True
-        self.door_coordinate_in = (0,0)
-        self.door_coordinate_out = (0,0)
+        self.navigation = Navigation()
+        self.door_coordinate_in:list[tuple] = [(0,0)]
+        self.door_coordinate_out:list[tuple] = [(0,0)]
+        self.map = Sprite('None Attributes', 1)
 
     def set_name(self, name:str):
         self.name = name
+
+    def set_sprite(self, sprite:Sprite):
+        self.map = sprite
+
+    def set_door_in(self, entry:list[tuple]):
+        self.door_coordinate_in = entry
+
+    def set_door_out(self, exit:list[tuple]):
+        self.door_coordinate_out = exit
+
+    def define_blocked_spaces(self, blocked_spaces_dict:dict):
+        self.navigation.blocked_spaces = blocked_spaces_dict
 
     def set_type(self, type:str):
         self.type = type
@@ -72,39 +89,43 @@ class Building():
     def talk_to_clerk(self):
         self.shop_counter.go_to_counter()
 
-    def determine_encounter(self, response:str):
+    def determine_encounter(self, action):
         '''
         Takes player response to see if it is npc, item leave, pc, or heal'
         '''
         encounter = None
-        if not response:
+        if not action:
             return None
-        if 'npc' in response and len(self.npcs) > 0:
+        print(action)
+        if action == exit:
+            return action
+        return
+        if 'npc' in action and len(self.npcs) > 0:
             encounter = self.talk_to_npc()  
-        elif 'heal' in response and self.healing_station:
+        elif 'heal' in action and self.healing_station:
             text = 'Have the nurse heal your pokemon?'
             if get_confirmation(text):
                 encounter = self.heal_roster()
-        elif 'pc' in response and self.pc_interface:
+        elif 'pc' in action and self.pc_interface:
             text = 'Open the PC?'
             if get_confirmation(text):
                 encounter = self.open_pc()
-        elif 'trainer' in response and len(self.trainers.trainers) > 0:
+        elif 'trainer' in action and len(self.trainers.trainers) > 0:
             text = 'Battle a trainer?'
             if get_confirmation(text):
                 self.trainers.engage_trainer(self.player.get_battle_info())
-        elif 'leader' in response and self.is_gym:
+        elif 'leader' in action and self.is_gym:
             text = 'Try Battleing the Gym Leader?'
             if get_confirmation(text):
                 self.trainers.engage_leader(self.player.get_battle_info())
-        elif 'item' in response:
+        elif 'item' in action:
             encounter = 'item'
             if get_confirmation('Use an item?'):
                 self.player.use_an_item()
-        elif 'clerk' in response and self.shop_interface:
+        elif 'clerk' in action and self.shop_interface:
             if get_confirmation('Talk to the store clerk?'):
                 self.talk_to_clerk()
-        elif leave in response:
+        elif leave in action:
             encounter = leave
         return encounter
   
@@ -137,19 +158,40 @@ class Building():
         response = input(text).strip().lower()
         return response
 
+    def check_leave_building(self):
+        if self.navigation.get_coordinate() in self.door_coordinate_out:
+            print('leaving')
+            return True
+        return False
+
+    def set_building_start_pos(self):
+        starting_pos = (self.door_coordinate_out[-1][0], self.door_coordinate_out[-1][1] - 1)
+        self.navigation.starting_position = starting_pos
+
+    def draw_map(self):
+        if not self.map:
+            print('no map')
+            return
+        ui.display.active.set_player_sprite(self.player.active_sprite)
+        self.map.draw(ui.display.active.window)
+        ui.display.active.update()
+
     def enter_building(self, player:Player):
+        self.navigation.define_navigation(player, self.map)
+        self.set_building_start_pos()
+        self.navigation.set_player_start_pos()
         self.player = player
         in_building= True
         if self.pc_interface:
             self.add_pc_interface(player.pc)
         while in_building:
-            response = self.get_action()
-            self.determine_encounter(response)
+            self.draw_map()
+            action = self.navigation.navigate_area()
+            if action in [exit, leave]:
+                return action
+            self.determine_encounter(action)
             if player.battle_info.white_out:
                 return
-            if response == leave:
-                in_building = not get_confirmation(f'Would you like to leave the {self.name}?')
-
-    def get_action(self):
-        response = self.building_actions()
-        return response
+            if self.check_leave_building():
+                return
+            

@@ -10,7 +10,6 @@ from pygame import key as key_input
 from pygame.rect import Rect
 
 clock = pygame.time.Clock()
-clock.tick(60)
 
 def call_flip():
     pygame.display.flip()

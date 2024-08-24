@@ -58,6 +58,7 @@ increase, decrease = 'increase', 'decrease'
 # Encounter Terms
 pokemon, level_range, rng_range = 'Pokemon', 'Level Range', 'RNG Range'
 area_dictionary, area_class = 'area Dictionary', 'Area Class'
+door_location = 'door location'
 route, town = 'Route', 'Town'
 pokemon_center, pokemart, building, gym = 'Pokemon Center', 'Pokemart', 'Building', 'Gym'
 exit, leave = 'exit', 'leave'

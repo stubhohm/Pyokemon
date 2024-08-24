@@ -34,7 +34,6 @@ class NavigationScreen():
         self.player_sprite.draw(self.window)
 
     def update(self):
-        self.draw_player()
         call_flip()
     
 

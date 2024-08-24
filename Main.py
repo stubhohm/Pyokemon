@@ -50,7 +50,7 @@ def game_loop():
         print('')
         action = area.active.enter_area(player_character)
         if type(action) == Route or type(action) == Town:
-            area.active = action
+            area.set_active_area(action)
         if action == exit:
             return False
     if look_for_pokemon_center(area.active, player_character):

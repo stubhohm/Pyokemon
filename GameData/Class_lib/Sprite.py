@@ -18,6 +18,8 @@ class Sprite(pSprite):
         self.x_center = None
         self.frames_in_loop = 1
         self.animation_frame = 0
+        self.image_lock = False
+        self.tickrate = 60
         super().__init__()
     
     def set_scale(self):
@@ -36,6 +38,25 @@ class Sprite(pSprite):
 
     def set_animation_loop(self, frames_in_loop:int):
         self.frames_in_loop = frames_in_loop
+
+    def set_image_array(self, image_array:list):
+        self.image_array = image_array
+        self.set_animation_loop(len(self.image_array))
+
+    def set_image_from_clock_ticks(self, ticks:int):
+        if ticks% self.tickrate == 0:
+            self.animation_frame += 1 
+        self.animation_frame = self.animation_frame % self.frames_in_loop
+        self.set_image(self.image_array[self.animation_frame])
+
+    def set_sprite_coordinates(self, coordinates:list[tuple]):
+        self.image_coordinates = coordinates
+
+    def jump_to_coordinate(self, coordinate:tuple, map_offset:pygame.math.Vector2):
+        scaled_coordinate = (coordinate[0] * step_distance, (coordinate[1] + 1) * step_distance)
+        adjusted_coordinate = (scaled_coordinate[0] + map_offset.x, scaled_coordinate[1] + map_offset.y)
+        self.pos.x = adjusted_coordinate[0]
+        self.pos.y = adjusted_coordinate[1]
 
     def reset_animation_loop(self):
         self.animation_frame = 0
@@ -65,6 +86,9 @@ class Sprite(pSprite):
     def cap_both(self):
         self.cap_horizontal_movement()
         self.cap_vertical_movement()
+
+    def lock_image(self):
+        self.image_lock = True
 
     def invert_movement(self):
         self.direction = -1

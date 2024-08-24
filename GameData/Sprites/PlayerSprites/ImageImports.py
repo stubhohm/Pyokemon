@@ -1,4 +1,3 @@
-from ...Class_lib.Sprite import Sprite
 from ...Modules.External_Modules import os, pygame
 from ...Keys import male, female
 from ...Keys import idle, walk, run, jump

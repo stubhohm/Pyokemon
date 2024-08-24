@@ -1,6 +1,8 @@
 from ..Keys import no_weather, exit, leave
 from ..Keys import select, cancel, up, down, left, right
+from ..Keys import idle
 from ..Keys import navigation, wild
+from ..Keys import name, door_location
 from ..Colors import black
 from ..Constants import step_distance, screen_size
 from ..Function_Lib.General_Functions import get_confirmation, try_again, rand100
@@ -28,6 +30,8 @@ class Town():
         self.tall_grass_zones:list[TallGrass] = []
         self.trainers:LocalTrainers = LocalTrainers()
         self.navigation = Navigation()
+        self.draw_below_player:list[Sprite] = []
+        self.draw_above_player:list[Sprite] = []
         self.transition_dict = {}
 
     def set_sprite(self, sprite:Sprite):
@@ -35,6 +39,9 @@ class Town():
 
     def add_building(self, building:Building):
         self.buildings.append(building)
+        building_dict = { name: building.name,
+                    door_location: building.door_coordinate_in}
+        self.navigation.add_to_building_dicts(building_dict)
 
     def add_npc(self, npc:NPC):
         self.npcs.append(npc)
@@ -47,6 +54,15 @@ class Town():
 
     def add_route(self, route:Route):
         self.navigation.adjacent_areas.append(route)
+
+    def add_to_draw_below_player(self, item_entry:dict):
+        item_name = item_entry[name]
+        sprite = Sprite(item_name, 2)
+        sprite.set_image_array(item_entry['images'])
+        sprite.set_sprite_coordinates(item_entry['coordinates'])
+        sprite.tickrate = item_entry['tick rate']
+        sprite.animation_frame = item_entry['offset']
+        self.draw_below_player.append(sprite)
 
     def define_area_transitions(self, transition_dict:dict):
         self.navigation.transition_dict = transition_dict
@@ -63,37 +79,51 @@ class Town():
     def define_water(self, dict:dict):
         self.navigation.water_spaces = dict
 
+    def draw_item_sprites(self, sprite:Sprite):
+        sprite.set_image_from_clock_ticks(self.ticks)
+        for position in sprite.image_coordinates:
+            sprite.jump_to_coordinate(position, self.map.pos)    
+            sprite.draw(ui.display.active.window)
+
+    def draw_items_above_player(self):
+        for sprite in self.draw_above_player:
+            self.draw_item_sprites(sprite)
+
+    def draw_items_below_player(self):
+        for sprite in self.draw_below_player:
+            self.draw_item_sprites(sprite)
+            
     def draw_map(self):
         if not self.map:
             print('no map')
             return
+        
         ui.display.active.set_player_sprite(self.player.active_sprite)
         self.map.draw(ui.display.active.window)
+        self.draw_items_below_player()
+        ui.display.active.draw_player()
+        self.draw_items_above_player()
         ui.display.active.update()
 
-    def select_building(self, coordinate:tuple[int, int]):
-        for i, building in enumerate(self.buildings):
-            i_str = str(i+1)
-            building_name = building.name.strip().lower()
-            if coordinate == i_str or coordinate == building_name:
-                text = f'Enter the {building.name}?'
-                if get_confirmation(text):
-                    return building
+    def select_building(self):
+        coordinate = self.navigation.get_coordinate()
+        for building in self.buildings:
+            if type(building) != Building:
+                continue
+            if coordinate in building.door_coordinate_in:
+                return building
         return None
 
-    def enter_a_building(self, coordinate):
-        looking_for_building = True
-        building = None
-        while looking_for_building:
-            building = self.select_building(coordinate)
-            if not building:
-                text = f'No match found at {coordinate}.'
-                print(text)
-                if not try_again():
-                    looking_for_building = False
-            else:
-                building.enter_building(self.player)
-                looking_for_building = False
+    def enter_a_building(self):
+        building = self.select_building()
+        if not building:
+            return
+        else:
+            building.enter_building(self.player)
+            self.navigation.starting_position = (building.door_coordinate_in[-1][0], building.door_coordinate_in[-1][1] + 1)
+            self.navigation.set_player_start_pos()
+            self.player.set_last_direction(down)
+            self.player.set_movement_type(idle)
 
     def talk_to_npc(self):
         pass
@@ -130,7 +160,8 @@ class Town():
         if encounter:
             return encounter
         encounter = self.search_tall_grass()
-        return encounter
+        if encounter:
+            return encounter
 
     def add_to_array(self):
         print('adding')
@@ -175,7 +206,16 @@ class Town():
         for i, name in enumerate(coord_names):
             self.print_coordinate_list(name, coord_list[i])
 
+    def resolve_action(self):
+        self.enter_a_building()
+        encounter = self.determine_encounter()
+        if type(encounter) == Creature:
+            self.battle_wild_pokemon(encounter, self.player)
+        elif type(encounter) == ActorBattleInfo:
+            self.trainers.engage_trainer(encounter, self.player)
+
     def enter_area(self, player:Player):
+        self.ticks = 0
         text = f'Entering {self.name}.'
         print(text)
         self.player = player
@@ -184,18 +224,16 @@ class Town():
         self.constructed_array = []
         self.navigation.set_player_start_pos()
         while in_area:
+            self.ticks += 1
             self.draw_map()
-            encounter = None
             action = self.navigation.navigate_area()
             if action in [exit, leave]:
                 return action
-            if action:
-                encounter = self.determine_encounter()
-            if type(encounter) == Creature:
-                self.battle_wild_pokemon(encounter, player)
-            elif type(encounter) == ActorBattleInfo:
-                self.trainers.engage_trainer(encounter, player)
-            
+            elif action:
+                self.resolve_action()
+          
+            if self.ticks % 60 == 0:
+                self.ticks = 0
 
             key_input = None
             if key_input:

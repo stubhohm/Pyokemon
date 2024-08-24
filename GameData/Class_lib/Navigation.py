@@ -4,6 +4,7 @@ from ..Colors import black
 from ..Keys import exit, leave, cancel
 from ..Keys import up, down, left, right, directional_inputs
 from ..Keys import walk, idle, jump, run, surfing
+from ..Keys import name, door_location
 from .Player import Player
 from .Sprite import Sprite
 from .UI import ui
@@ -20,14 +21,19 @@ class Navigation():
         self.ledge_tops = {}
         self.water_spaces = {}
         self.transition_dict:dict = {}
+        self.building_dicts:list[dict] = []
         self.switch_area = False
         self.starting_position:list[tuple[int,int]] = (0,0) 
         self.ghost_mode = ghost_mode
+
 
     def define_navigation(self, player:Player, map:Sprite):
         self.player = player
         self.map = map
         self.player.get_animation_start()
+
+    def add_to_building_dicts(self, building_dict:dict):
+        self.building_dicts.append(building_dict)
 
     def set_player_start_pos(self):
         setup = True
@@ -128,10 +134,9 @@ class Navigation():
             horizontal_pin = (self.map.pos.x <= self.map.horizontal_bound)
             if not setup:
                 self.player.set_last_direction(right)
-        if horizontal_pin or self.is_player_off_center(True):
+        if horizontal_pin or self.is_player_off_center(True) or self.map.image_lock:
             self.player.active_sprite.set_velocity(x, 0)
         else:
-            print('map')
             self.map.set_velocity(x, 0)
 
     def handle_y_movement(self, y:int, setup = False):
@@ -145,11 +150,9 @@ class Navigation():
             vertical_pin = (self.map.pos.y <= self.map.vertical_bound)
             if not setup:
                 self.player.set_last_direction(down)
-        if vertical_pin or self.is_player_off_center(False):
-            print('player')
+        if vertical_pin or self.is_player_off_center(False) or self.map.image_lock:
             self.player.active_sprite.set_velocity(0, y)
         else:
-            print('map')
             self.map.set_velocity(0, y)
 
     def select_new_area(self, starting_pos, key:str):
@@ -158,6 +161,7 @@ class Navigation():
         '''
         target_area = None
         for area in self.adjacent_areas:
+            print(area.name)
             if area.name != key:
                 continue
             else:
@@ -177,8 +181,22 @@ class Navigation():
             if target_coords in value[0]:
                 print(f'Target: {target_coords}')
                 print(key)
+                print(value[0])
                 index = value[0].index(target_coords)
                 return self.select_new_area(value[1][index], key)
+
+    def check_enter_building(self):
+        for building_dict in self.building_dicts:
+            door_pos = building_dict.get(door_location, False)
+            if not door_pos:
+                continue
+            if self.get_coordinate() in door_pos:
+                value = building_dict.get(name, False)
+                if type(value) != str:
+                    return
+                else:
+                    return value
+        return
 
     def handle_movement(self, x:int, y:int):
         self.player.set_movement_type(walk)
@@ -314,4 +332,7 @@ class Navigation():
         area = self.check_area_departure()
         if area:
             return area
+        building = self.check_enter_building()
+        if building:
+            return building
         return False

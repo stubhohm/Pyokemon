@@ -8,14 +8,14 @@ class TallGrass():
     def __init__(self, name:str) -> None:
         self.name = name
         self.coordinates = []
-        self.encounter_trigger_rate = 10
+        self.encounter_trigger_rate:int = 10
         self.make_blank_encounter_list()
         
     def make_blank_encounter_list(self):
         self.encounter_list:list = []
 
-    def add_coordinates(self, array):
-        self.coordinates = array
+    def add_coordinates(self, dict:dict):
+        self.coordinates = dict
 
     def add_pokemon(self, Creature_fx, lvl_range:list[int], encounter_chance:float):
         '''
@@ -33,24 +33,27 @@ class TallGrass():
         lower, upper = range[0], range[-1]
         if lower == upper:
             return lower
-        return random.randrange(lower, upper)
+        else:
+            return random.randrange(lower, upper)
+
+    def set_encounter_rate(self, rate:int):
+        '''
+        Default of 10%, set between 0 and 100 for percent change to proc encounter.
+        '''
+        self.encounter_trigger_rate = rate
+
+    def roll_wild_pokemon(self) -> dict:
+        encounter_dicts, encounter_chance = zip(*self.encounter_list)
+        total_chances = sum(encounter_chance)
+        weights = [p / total_chances for p in encounter_chance]
+        active_encounter:dict = random.choices(encounter_dicts, weights, k=1)[0]
+        return active_encounter
 
     def generate_wild_encounter(self):
         '''
         Randomly picks a pokemon from encounter array
         '''
-        if not wild_encounters_on:
-            print('wild encounters turned off')
-            return None
-        encounter_dicts, encounter_chance = zip(*self.encounter_list)
-        try:
-            total_chances = sum(encounter_chance)
-        except TypeError:
-            print(self.encounter_list)
-            print(encounter_chance)
-            return
-        weights = [p / total_chances for p in encounter_chance]
-        active_encounter = random.choices(encounter_dicts, weights, k=1)[0]
+        active_encounter = self.roll_wild_pokemon()
         if not active_encounter:
             return
         level = self.select_level(active_encounter[level_range])
@@ -63,8 +66,12 @@ class TallGrass():
         Checks to see if we trigger a random encounter. Returns None or an instanced wild pokemon if we do.
         '''
         rng = rand100()
-        wild_pokemon = None
         print(self.name)
+        if not wild_encounters_on:
+            print('wild encounters turned off')
+            return None
         if rng <= self.encounter_trigger_rate:
-            wild_pokemon = self.generate_wild_encounter()
-        return wild_pokemon
+            return self.generate_wild_encounter()
+        else:
+            return None
+        

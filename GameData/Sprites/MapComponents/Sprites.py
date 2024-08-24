@@ -21,9 +21,39 @@ def generate_littleroot_town_map():
     map.invert_movement()
     return map
 
+# Oldale Town and Oldale Specific Buildings
+
 def generate_oldale_town_map():
     img_path = os.path.join(directory_path, town, 'Oldale_Town.png')
     map = Sprite('Oldale Town', 2)
+    map.import_image(img_path)
+    map.cap_both()
+    map.invert_movement()
+    return map
+
+def generate_Oldale_NorthWest_House_map():
+    img_path = os.path.join(directory_path, building, 'Oldale','NorthWestHouse.png')
+    map = Sprite('North West', 2)
+    map.import_image(img_path)
+    map.cap_both()
+    map.invert_movement()
+    map.lock_image()
+    return map
+
+def generate_Oldale_SouthEast_House_map():
+    img_path = os.path.join(directory_path, building, 'Oldale','SouthEastHouse.png')
+    map = Sprite('South East', 2)
+    map.import_image(img_path)
+    map.cap_both()
+    map.invert_movement()
+    map.lock_image()
+    return map
+
+
+
+def generate_petalburg_city_map():
+    img_path = os.path.join(directory_path, town, 'Petalburg_City.png')
+    map = Sprite('Petalburg City', 2)
     map.import_image(img_path)
     map.cap_both()
     map.invert_movement()
@@ -55,7 +85,7 @@ def generate_route_103_map():
 
 def generate_route_104_South_map():
     img_path = os.path.join(directory_path, route, 'Route_104_South_Map.png')
-    map = Sprite('Route 104', 2)
+    map = Sprite('Route 104 South', 2)
     map.import_image(img_path)
     map.cap_both()
     map.invert_movement()
@@ -63,8 +93,27 @@ def generate_route_104_South_map():
 
 def generate_route_104_North_map():
     img_path = os.path.join(directory_path, route, 'Route_104_North_Map.png')
-    map = Sprite('Route 104', 2)
+    map = Sprite('Route 104 North', 2)
     map.import_image(img_path)
     map.cap_both()
     map.invert_movement()
+    return map
+
+
+def generate_pokemon_center_map():
+    img_path = os.path.join(directory_path, building, 'Pokemon_Center','Pokemon_Center_F1.png')
+    map = Sprite('Pokemon Center', 2)
+    map.import_image(img_path)
+    map.cap_both()
+    map.invert_movement()
+    map.lock_image()
+    return map
+
+def generate_pokemart_map():
+    img_path = os.path.join(directory_path, building, 'Pokemart','Pokemart.png')
+    map = Sprite('Pokemon Center', 2)
+    map.import_image(img_path)
+    map.cap_both()
+    map.invert_movement()
+    map.lock_image()
     return map
