@@ -213,7 +213,6 @@ class Navigation():
             return
         if self.water_spaces.get(target_coords, False) and not self.ghost_mode:
             if not self.player.movement_type == surfing:
-                print('in a water tile')
                 self.player.set_movement_type(idle)
                 self.player.update_player_sprite()
                 return
