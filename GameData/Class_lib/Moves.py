@@ -65,9 +65,7 @@ class Moves ():
             self.move_3 = new_move
         else:
             self.move_4 = new_move
-        self.print_moves()
         self.update_known_moves()
-        self.print_moves()
 
     def update_known_moves(self):
         self.move_list = [self.move_1, self.move_2, self.move_3, self.move_4]
@@ -147,11 +145,9 @@ class Moves ():
                 continue
             text = f'{name} forgot {output.name} and learned {new_move.name}!'
             self.print_to_terminal(text)
-            print(text)
             for i, moves in enumerate(self.move_list):
-                if output == moves.name:
-                    break
-            self.replace_move(i, new_move)
+                if output.name == moves.name:
+                    self.replace_move(i, new_move)
             return True
         return False
 

@@ -122,8 +122,6 @@ class BattleTerminal():
         self.columns = columns
         self.active_grid = self.define_grid(input_list, columns)
         self.current_selection = self.active_grid[0][0]
-        print(self.active_list)
-        print(self.active_grid)
         if self.current_selection == fight:
             self.mode = default
 
