@@ -1,5 +1,5 @@
 from ..Modules.External_Modules import pygame
-from ..Keys import select, cancel
+from ..Keys import select, cancel, terminate
 from ..Keys import directional_inputs
 
 class Input():
@@ -28,6 +28,8 @@ class Input():
             name = self.key_last
         if name == 'return':
             name = select
+        if name == 't':
+            name = terminate
         if name == 'b':
             name = cancel
         self.key_last = name

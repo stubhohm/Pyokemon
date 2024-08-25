@@ -12,6 +12,10 @@ class PC():
         self.stored_pokemon:list[Creature] = []
         self.page = 0
         self.page_max = 0
+        self.coordinates = (12, 4)
+
+    def set_coordinates(self, coordinates:tuple):
+        self.coordinates = coordinates
 
     def print_to_terminal(self, text:str):
         ui.display.active.battle_terminal.slow_print(text, terminal_font_size, black)

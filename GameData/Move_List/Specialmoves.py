@@ -63,17 +63,17 @@ def mvwhirlpool():
 #Special Grass Moves
 def mvabsorb():
     absorb = SpecialAttack('Absorb', t_enemy, grass, 20, 25, 100)
-    absorb.hp_attributes.set_damage_scaled_modifier(-0.50)
+    absorb.hp_attributes.set_damage_scaled_modifier(0.50)
     return absorb
 
 def mvmega_drain():
     mega_drain = SpecialAttack('Mega Drain', t_enemy, grass, 40, 15, 100)
-    mega_drain.hp_attributes.set_damage_scaled_modifier(-0.50)
+    mega_drain.hp_attributes.set_damage_scaled_modifier(0.50)
     return mega_drain
 
 def mvgiga_drain():
     giga_drain = SpecialAttack('Giga Drain', t_enemy, grass, 75, 10, 100)
-    giga_drain.hp_attributes.set_damage_scaled_modifier(-0.50)
+    giga_drain.hp_attributes.set_damage_scaled_modifier(0.50)
     return giga_drain
 
 def mvleaf_blade():

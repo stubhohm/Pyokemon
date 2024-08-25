@@ -9,6 +9,7 @@ from ...Function_Lib.Generate_Trainers import generate_bug_trainers
 from ...Class_lib.TallGrass import TallGrass
 from ...Class_lib.Route import Route
 from ...Class_lib.Building import Building
+from ...Class_lib.Sprite import Sprite
 from ...Sprites.MapComponents.MapImports import generate_route_102_map as generate_route_map
 from ...Sprites.MapComponents.TerrainItemsImports import get_image_array
 from .ValidationDict import blocked_spaces_dict
@@ -84,13 +85,15 @@ def set_map(route:Route):
 
 
 def make_item_dict(route:Route, img_name:str, coordinates:list[tuple], img_array_len:int, tick_rate:int, offset:int):
-    flower_dict = {}
-    flower_dict['images'] = get_image_array(img_name, img_array_len)
-    flower_dict['coordinates'] = coordinates
-    flower_dict['tick rate'] = tick_rate
-    flower_dict['offset'] = offset
-    flower_dict[name] = img_name
-    route.add_to_draw_below_player(flower_dict)
+    item_name = img_name
+    sprite = Sprite(item_name, 2)
+    sprite.set_image_array(get_image_array(img_name, img_array_len))
+    sprite.set_sprite_coordinates(coordinates)
+    sprite.tickrate = tick_rate
+    sprite.animation_frame = offset
+    sprite.y_shift = 4
+    route.add_to_draw_below_player(sprite)
+
 
 def set_below_player_render_items(route:Route):
     img_name = 'RedFlowerbush'

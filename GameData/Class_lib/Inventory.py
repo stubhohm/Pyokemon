@@ -215,4 +215,11 @@ class Inventory():
         entry = {k_item:item, quant:quantity + value}
         self.capture_items[item.name] = entry
 
-        
+    def add_loot(self, loot:list[Item]):
+        for item in loot:
+            if type(item) == CaptureItem:
+                self.add_capture_items(item, 1)
+            elif type(item) == HealingItem:
+                self.add_healing_items(item, 1)
+            elif type(item) == StatusItem:
+                self.add_status_items(item, 1)

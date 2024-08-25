@@ -24,7 +24,7 @@ class Moves ():
             if not move:
                 continue
             print(f'{i + 1}: {move.name}')
-            print(f'  PP: {move.points}\n  Type: {move.element}')
+            print(f'  PP: {move.attributes.points}\n  Type: {move.attributes.element}')
 
     def get_moves_list(self):
         move_names = []
@@ -39,7 +39,7 @@ class Moves ():
         for move in self.move_list:
             if not move:
                 continue
-            move.points = move.pp_max
+            move.attributes.points = move.attributes.pp_max
 
     def print_to_terminal(self, text:str):
         ui.display.active.battle_terminal.slow_print(text, terminal_font_size, black)
@@ -56,7 +56,7 @@ class Moves ():
         moves.set_moves(self.move_list)
         return moves
 
-    def replace_move(self, index:int, new_move):
+    def replace_move(self, index:int, new_move:Attack):
         if index == 0:
             self.move_1 = new_move
         elif index == 1:
@@ -65,7 +65,9 @@ class Moves ():
             self.move_3 = new_move
         else:
             self.move_4 = new_move
+        self.print_moves()
         self.update_known_moves()
+        self.print_moves()
 
     def update_known_moves(self):
         self.move_list = [self.move_1, self.move_2, self.move_3, self.move_4]
@@ -153,6 +155,20 @@ class Moves ():
             return True
         return False
 
+    def determine_if_move_is_new(self, move:Attack):
+        if not move:
+            print('not move')
+            return False
+        new_move:Attack = move()
+        for moves in self.move_list:
+            if not moves:
+                print('not move')
+                break
+            if new_move.name == moves.name:
+                print('already known')
+                return False
+        return new_move
+
     def learn_via_levelup(self, start_level:int, current_level:int, name:str):
         learn_list = self.levelup_moves[start_level + 1:current_level + 1]
         for level_learned_list in learn_list:
@@ -161,36 +177,31 @@ class Moves ():
                 continue
             for move in level_learned_list:
                 learned = False
-                if not move:
-                    continue
-                new_move:Attack = move()
-                for moves in self.move_list:
-                    if new_move.name == moves.name:
-                        learned = True
-                if learned:
+                new_move = self.determine_if_move_is_new(move)
+                if not new_move:
                     continue
                 text = f'{name} is trying to learn {new_move.name}!'
                 self.print_to_terminal(text)
                 print(text)
                 for i, viable_move in enumerate(self.move_list):
-                    if learned:
-                        continue
                     if not viable_move:
                         text = f'{name} learned {new_move.name}!'
                         self.print_to_terminal(text)
                         print(text)
+                        print(i, new_move.name)
                         self.replace_move(i, new_move)
+                        self.print_moves()
                         learned = True
+                        break  
                 if learned:
-                    continue       
+                    continue
                 text = f'Would you like to replace an existing move with {new_move.name}?'
-                #self.print_to_terminal(text)
-                learned = get_terminal_confirmation(text)
-                if not learned:
+                self.print_to_terminal(text)
+                if not get_terminal_confirmation(text):
                     continue
                 learned = self.try_learn(new_move, name)
 
-    def rotate_in_new_move(self, new_move):
+    def rotate_in_new_move(self, new_move:Attack):
         self.move_4 = self.move_3
         self.move_3 = self.move_2
         self.move_2 = self.move_1

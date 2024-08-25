@@ -50,6 +50,8 @@ class BattleTerminal():
             if (i + 1) % columns == 0:
                 grid.append(row)
                 row = []
+        if len(row) > 0:
+            grid.append(row)
         return grid
 
     def get_position(self):
@@ -120,6 +122,8 @@ class BattleTerminal():
         self.columns = columns
         self.active_grid = self.define_grid(input_list, columns)
         self.current_selection = self.active_grid[0][0]
+        print(self.active_list)
+        print(self.active_grid)
         if self.current_selection == fight:
             self.mode = default
 
@@ -192,11 +196,9 @@ class BattleTerminal():
         heigh_padding = self.height / 16
         lines = self.text.wrap_text(text, size, max_length)
         x = self.width * 2 / 32
-        print(self.y)
         text_height = self.text.draw_text('TEST', size, black).get_height()
         y = text_height + heigh_padding + self.y
         for line in lines:
-            print(line)
             self.text.slow_write_text(self.parent_surface, line, size, (x,y), color)
             y += (heigh_padding + text_height)
         time.sleep(0.5)

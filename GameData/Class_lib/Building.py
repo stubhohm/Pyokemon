@@ -1,5 +1,5 @@
 from ..Keys import pokemon_center, pokemart, building, gym, leave, exit
-from ..Keys import no_weather, hp
+from ..Keys import no_weather, hp, select, name
 from ..Function_Lib.General_Functions import get_confirmation, try_again
 from .ActorBattleInfo import ActorBattleInfo
 from .NPC import NPC
@@ -10,6 +10,8 @@ from .Battle import Battle
 from .Sprite import Sprite
 from .Navigation import Navigation
 from .LocalTrainers import LocalTrainers
+from .Interactable import Interactable
+from ..Interactable_Items.HealingStation import HealingStation
 from .UI import ui
 
 class Building():
@@ -17,10 +19,13 @@ class Building():
         self.set_name(name)
         self.npcs:list[NPC] = []
         self.trainers:LocalTrainers = LocalTrainers()
+        self.interactables:list[Interactable] = []
+        self.draw_above_player = []
+        self.draw_below_player = []
         self.pc_interface = False
         self.healing_station = False
         self.shop_interface = False
-        self.is_gym = True
+        self.is_gym = False
         self.navigation = Navigation()
         self.door_coordinate_in:list[tuple] = [(0,0)]
         self.door_coordinate_out:list[tuple] = [(0,0)]
@@ -55,20 +60,11 @@ class Building():
         self.pc_interface = True
         self.pc = pc
 
-    def add_healing_station(self):
-        self.healing_station = True
-
-    def add_shop_counter(self, shop_counter:ShopCounter):
-        self.shop_interface = True
-        self.shop_counter = shop_counter
+    def add_interactable(self, item:Interactable):
+        self.interactables.append(item)
 
     def talk_to_npc(self):
         print('talking to an npc')
-
-    def heal_roster(self):
-        for roster_pokemon in self.player.roster:
-            roster_pokemon.heal_at_pokecenter()
-        print('You roster has been fully healed.')
 
     def open_pc(self):
         self.pc.use_pc(self.player.get_battle_info())
@@ -134,9 +130,12 @@ class Building():
 
     def add_trainer(self, trainer:ActorBattleInfo):
         self.trainers.add_trainer(trainer)
-    
-    def set_gym_leader(self, gym_leader:ActorBattleInfo):
-        self.trainers.set_gym_leader(gym_leader)
+       
+    def add_to_draw_below_player(self, sprite:Sprite):
+        self.draw_below_player.append(sprite)
+
+    def add_to_draw_above_player(self, sprite:Sprite):
+        self.draw_above_player.append(sprite)
 
     def building_actions(self):
         if self.player.battle_info.white_out:
@@ -164,9 +163,48 @@ class Building():
             return True
         return False
 
+    def check_item_interactions(self):
+        for item in self.interactables:
+            if not item:
+                continue
+            facing_space = self.navigation.get_coordinate_plus_one(self.navigation.get_coordinate())
+            if facing_space != item.coordinate:
+                continue
+            if item.is_lootable:
+                loot = item.interact()
+                if not loot:
+                    return
+                self.player.inventory.add_loot(loot)
+            else:
+                item.interact()
+
+    def check_interaction(self):
+        self.check_item_interactions()
+        ui.input.key_last = None
+
     def set_building_start_pos(self):
         starting_pos = (self.door_coordinate_out[-1][0], self.door_coordinate_out[-1][1] - 1)
         self.navigation.starting_position = starting_pos
+
+    def draw_item_sprites(self, sprite:Sprite):
+        sprite.set_image_from_clock_ticks(self.ticks)
+        for position in sprite.image_coordinates:
+            sprite.jump_to_coordinate(position, self.map.pos)    
+            sprite.draw(ui.display.active.window)
+
+    def draw_items_above_player(self):
+        for sprite in self.draw_above_player:
+            self.draw_item_sprites(sprite)
+
+    def draw_items_below_player(self):
+        for sprite in self.draw_below_player:
+            if not sprite:
+                continue
+            self.draw_item_sprites(sprite)
+        for item in self.interactables:
+            if not item.sprite:
+                continue
+            self.draw_item_sprites(item.sprite)
 
     def draw_map(self):
         if not self.map:
@@ -174,7 +212,9 @@ class Building():
             return
         ui.display.active.set_player_sprite(self.player.active_sprite)
         self.map.draw(ui.display.active.window)
-        self.player.active_sprite.draw(ui.display.active.window)
+        self.draw_items_below_player()
+        ui.display.active.draw_player()
+        self.draw_items_above_player()
         ui.display.active.update()
 
     def enter_building(self, player:Player):
@@ -183,16 +223,21 @@ class Building():
         self.navigation.set_player_start_pos()
         self.player = player
         in_building= True
-        if self.pc_interface:
-            self.add_pc_interface(player.pc)
+        self.ticks = 0
         while in_building:
             self.draw_map()
             action = self.navigation.navigate_area()
             if action in [exit, leave]:
                 return action
+            if action == select:
+                self.check_interaction()
             self.determine_encounter(action)
             if player.battle_info.white_out:
                 return
             if self.check_leave_building():
                 return
+            self.ticks += 1
+            if self.ticks % 60 == 0:
+                self.ticks = 0
+            
             

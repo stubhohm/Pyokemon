@@ -1,9 +1,12 @@
-from ...Keys import npc, name
+from ...Keys import npc, name, pokeball
 from ...Creatures.Wurmple_Line.Full import instance_wurmple
 from ...Function_Lib.Generate_Trainers import generate_bug_trainers
 from ...Class_lib.Town import Town
 from ...Class_lib.TallGrass import TallGrass
-from ...Class_lib.Building import Building
+from ...Class_lib.Sprite import Sprite
+from ...Interactable_Items.Sign import Sign
+from ...Interactable_Items.LootableItem import LootableItem
+from ...Item_List.ItemsList import Item, make_potion
 from ...Building_List.BuildingList import make_building
 from ...Sprites.MapComponents.MapImports import generate_littleroot_town_map as generate_town_map
 from ...Sprites.MapComponents.MapImports import generate_rivals_house, generate_players_house, generate_birchs_lab
@@ -34,29 +37,31 @@ def set_trainers(town:Town):
         town.add_trainer(trainer)
 
 def set_buildings(town:Town):
-    birch_lab = make_building("Birch's Lab")
-    birch_lab.set_door_in([(12, 16)])
-    birch_lab.set_door_out([(9, 13), (10, 13)])
-    birch_lab.set_sprite(generate_birchs_lab())
-    birch_lab.define_blocked_spaces(birch_lab_blocked_spaces)
+    map = generate_birchs_lab()
+    birch_lab = make_building("Birch's Lab", [(12, 16)], [(9, 13), (10, 13)], map, birch_lab_blocked_spaces)
 
-    player_house = make_building('House 2')
-    player_house.set_door_in([(10, 8)])
-    player_house.set_door_out([(12,11),(13,11)])
-    player_house.set_sprite(generate_players_house())
-    player_house.define_blocked_spaces(player_house_blocked_dict)
+    map = generate_players_house()
+    player_house = make_building('House 2',[(10, 8)] , [(12,11),(13,11)], map, player_house_blocked_dict)
 
-    rival_house = make_building('House 2')
-    rival_house.set_door_in([(19, 8)])
-    rival_house.set_door_out([(5, 11),(6, 11)])
-    rival_house.set_sprite(generate_rivals_house())
-    rival_house.define_blocked_spaces(rival_house_blocked_dict)
+    map = generate_rivals_house()
+    rival_house = make_building('House 2', [(19, 8)], [(5, 11),(6, 11)], map, rival_house_blocked_dict)
 
     town.add_building(birch_lab)
     town.add_building(player_house)
     town.add_building(rival_house)
 
+def set_interactables(town:Town):
+    birch_lab_sign = make_sign('Birch Lab Sign', 'The lab of Professor Birch.', (11, 17))
+    player_house_sign = make_sign('Players House Sign', 'Players House', (12, 8))
+    rival_house_sign = make_sign('Rival House Sign', 'Rivals House', (17, 8))
+    littleroot_town_sign = make_sign('Littleroot Town Sign', 'Welcome to Littleroot Town. A great place to live', (20, 13))
+    lootable_potion = make_lootable_item(make_potion(), (16,10))
 
+    town.add_interactable(birch_lab_sign)
+    town.add_interactable(player_house_sign)
+    town.add_interactable(rival_house_sign)
+    town.add_interactable(littleroot_town_sign)
+    town.add_interactable(lootable_potion)
 
 # Primary Called Function by other documents
 def generate_town():
@@ -69,6 +74,7 @@ def generate_town():
     set_transitions(town)
     set_buildings(town)
     set_below_player_render_items(town)
+    set_interactables(town)
 
     return town
 
@@ -104,11 +110,25 @@ def set_transitions(town:Town):
 
 # Helper function to make item dicts for drawing above and below player
 
-def make_item_dict(town:Town, img_name:str, coordinates:list[tuple], image_array_len:int, tick_rate:int, offset:int):
-    item_dict = {}
-    item_dict['images'] = get_image_array(img_name, image_array_len)
-    item_dict['coordinates'] = coordinates
-    item_dict['tick rate'] = tick_rate
-    item_dict['offset'] = offset
-    item_dict[name] = img_name
-    town.add_to_draw_below_player(item_dict)
+def make_item_dict(town:Town, img_name:str, coordinates:list[tuple], img_array_len:int, tick_rate:int, offset:int):
+    item_name = img_name
+    sprite = Sprite(item_name, 2)
+    sprite.set_image_array(get_image_array(img_name, img_array_len))
+    sprite.set_sprite_coordinates(coordinates)
+    sprite.tickrate = tick_rate
+    sprite.animation_frame = offset
+    sprite.y_shift = 0
+    sprite.x_shift = 0
+    town.add_to_draw_below_player(sprite)
+
+def make_sign(sign_name:str, sign_text:str, sign_position:tuple):
+    sign = Sign(sign_name)
+    sign.define_sign(sign_text, sign_position)
+    return sign
+
+def make_lootable_item(item:Item, coordinate:tuple, image_name=pokeball, sprite_count:int = 1):
+    loot_item = LootableItem(item.name)
+    loot_item.add_loot(item)
+    loot_item.set_coordinate(coordinate)
+    loot_item.get_image(sprite_count, image_name)
+    return loot_item

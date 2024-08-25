@@ -28,7 +28,7 @@ class Text():
             time.sleep(text_speed)
             call_flip()
 
-    def wrap_text(self, text, size, max_width):
+    def wrap_text(self, text:str, size:int, max_width:int):
         words = text.split(' ')
         lines = []
         current_line = ''

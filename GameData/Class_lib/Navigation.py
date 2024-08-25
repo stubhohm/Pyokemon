@@ -1,12 +1,13 @@
 from ..Constants import step_distance, screen_size
 from ..Constants import ghost_mode
 from ..Colors import black
-from ..Keys import exit, leave, cancel
+from ..Keys import exit, leave, cancel, select, terminate
 from ..Keys import up, down, left, right, directional_inputs
 from ..Keys import walk, idle, jump, run, surfing
 from ..Keys import name, door_location
 from .Player import Player
 from .Sprite import Sprite
+from .Interactable import Interactable
 from .UI import ui
 
 
@@ -25,7 +26,6 @@ class Navigation():
         self.switch_area = False
         self.starting_position:list[tuple[int,int]] = (0,0) 
         self.ghost_mode = ghost_mode
-
 
     def define_navigation(self, player:Player, map:Sprite):
         self.player = player
@@ -76,8 +76,7 @@ class Navigation():
         self.player.update_player_sprite()
 
     def determine_velocity(self, action:str):
-        self.map.set_velocity(0,0)
-        self.player.active_sprite.set_velocity(0,0)
+        self.reset_velocity()
         x, y = 0, 0
         if action == up:
             y = -1
@@ -86,6 +85,20 @@ class Navigation():
         elif action == left:
             x = -1
         elif action == right:
+            x = 1
+        return x, y
+
+    def direction_to_vector(self, direction:str):
+        if direction not in directional_inputs:
+            return None
+        x, y = 0, 0
+        if direction == up:
+            y = -1
+        elif direction == down:
+            y = 1
+        elif direction == left:
+            x = -1
+        elif direction == right:
             x = 1
         return x, y
 
@@ -106,10 +119,8 @@ class Navigation():
         self.player.active_sprite.pos.x, self.player.active_sprite.pos.y = 0, 0
 
     def reset_velocity(self):
-        self.player.active_sprite.velocity.y = 0
-        self.map.velocity.y = 0
-        self.player.active_sprite.velocity.x = 0
-        self.map.velocity.x = 0
+        self.player.active_sprite.set_velocity(0, 0)
+        self.map.set_velocity(0, 0)
 
     def get_coordinate(self):
         map_x, map_y = abs(self.map.pos.x), abs(self.map.pos.y)
@@ -118,9 +129,8 @@ class Navigation():
         return x, y
 
     def get_coordinate_plus_one(self, coordinate):
-        x = self.map.velocity.x + self.player.active_sprite.velocity.x
-        y = self.map.velocity.y + self.player.active_sprite.velocity.y
-        target_coords = (coordinate[0] + x, coordinate[1]+ y)
+        x_y_vector = self.direction_to_vector(self.player.get_last_direction())
+        target_coords = (coordinate[0] + x_y_vector[0], coordinate[1]+ x_y_vector[1])
         return target_coords
 
     def handle_x_movement(self, x:int, setup = False):
@@ -284,6 +294,9 @@ class Navigation():
         self.bottom_right = None
 
     def map_area_helper_function(self, key_input):
+        if key_input in [select, 'i']:
+            self.check_interaction()
+            ui.input.key_last = None
         if key_input == 'm':
             self.add_to_dict()
         if key_input == 'a':
@@ -305,23 +318,29 @@ class Navigation():
             else:
                 print("Ghost mode off.")
 
+    def complete_movement(self):
+        self.move_sprites()
+        moving = self.map.moving or self.player.active_sprite.moving
+        if not moving:
+            self.player.set_movement_type(idle)
+            self.map.set_jumping(False)
+            self.player.update_player_sprite()
+            return True
+        return False
+
     def navigate_area(self):
         ui.display.active.window.fill(black)
         action = ui.input.get_player_input(True)    
         moving = self.map.moving or self.player.active_sprite.moving
         if moving:
-            self.move_sprites()
-            moving = self.map.moving or self.player.active_sprite.moving
-            if not moving:
-                self.player.set_movement_type(idle)
-                self.map.set_jumping(False)
-                self.player.update_player_sprite()
-                return True
-            return False
+            return self.complete_movement()
         if self.player.battle_info.white_out:
             return leave
-        if action == cancel:
+        if action == terminate:
             return exit
+        if action == select:
+            ui.input.key_last = None
+            return select
         if not action in directional_inputs:
             self.map_area_helper_function(action)
             return False

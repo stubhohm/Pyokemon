@@ -1,10 +1,13 @@
-from ...Keys import npc, name
+from ...Keys import npc, name, pokeball
 from ...Class_lib.Town import Town
-from ...Class_lib.ShopCounter import ShopCounter
-from ...Class_lib.Building import Building
 from ...Class_lib.TallGrass import TallGrass
+from ...Class_lib.Sprite import Sprite
+from ...Class_lib.Item import Item
+from ...Interactable_Items.Sign import Sign
+from ...Interactable_Items.LootableItem import LootableItem
+from ...Item_List.ItemsList import make_pokeball, make_potion, make_antidote, make_paralyzeheal, make_awakening
 from ...Creatures.Wurmple_Line.Full import instance_wurmple
-from ...Building_List.BuildingList import make_pokemart, make_pokemon_center, make_building
+from ...Building_List.BuildingList import Pokemart, PokemonCenter, make_building
 from ...Sprites.MapComponents.MapImports import generate_oldale_town_map as generate_town_map
 from ...Sprites.MapComponents.MapImports import generate_Oldale_NorthWest_House_map, generate_Oldale_SouthEast_House_map
 from ...Sprites.MapComponents.TerrainItemsImports import get_image_array
@@ -33,37 +36,37 @@ def set_trainers(town:Town):
     for trainer in trainers:
         town.add_trainer(trainer)
 
-def set_nps(town:Town):
+def set_npcs(town:Town):
     npcs = []
     for non_player_character in npcs:
         town.add_npc(non_player_character)
 
+def set_store_price_and_items(pokemart:Pokemart):
+    items = [make_pokeball(), make_potion(), make_antidote(), make_paralyzeheal(), make_awakening()]
+    pokemart.shop_counter.add_item(items)
 
 def set_buildings(town:Town):
-    pokemon_center = make_pokemon_center('Oldale Pokemon Center')
+    pokemon_center = PokemonCenter('Oldale Pokemon Center')
     pokemon_center.set_door_in([(6, 15)])
 
-    shop_counter = ShopCounter('Pokemon Shop Counter')
-    pokemart = make_pokemart('Oldale Pokemart', shop_counter)
+    pokemart = Pokemart('Oldale Pokemart')
     pokemart.set_door_in([(14, 5)])
+    set_store_price_and_items(pokemart)
     
+    map = generate_Oldale_NorthWest_House_map()
+    house_1 = make_building('House 1', [(5, 6)], [(12,11),(13,11)], map, house_1_blocked_dict)
 
-    house_1 = make_building('House 1')
-    house_1.set_door_in([(5, 6)])
-    house_1.set_door_out([(12,11),(13,11)])
-    house_1.set_sprite(generate_Oldale_NorthWest_House_map())
-    house_1.define_blocked_spaces(house_1_blocked_dict)
-
-    house_2 = make_building('House 2')
-    house_2.set_door_in([(15,15)])
-    house_2.set_door_out([(10,13),(11,13)])
-    house_2.set_sprite(generate_Oldale_SouthEast_House_map())
-    house_2.define_blocked_spaces(house_2_blocked_dict)
+    map = generate_Oldale_SouthEast_House_map()
+    house_2 = make_building('House 2', [(15,15)], [(10,13),(11,13)], map, house_2_blocked_dict)
 
     town.add_building(pokemon_center)
     town.add_building(pokemart)
     town.add_building(house_1)
     town.add_building(house_2)
+
+def set_interactables(town:Town):
+    town_sign = make_sign(f'{town.name} Sign', f'Welcome to {town.name}! Stop in for a potion or to rest on your travels!', (11, 8))
+    town.add_interactable(town_sign)
 
 
 # Primary Called Function by other documents
@@ -77,7 +80,8 @@ def generate_town():
     set_transitions(town)
     set_buildings(town)
     set_below_player_render_items(town)
-    set_nps(town)
+    set_interactables(town)
+    set_npcs(town)
 
     return town
 
@@ -102,14 +106,16 @@ def set_transitions(town:Town):
     transition_dict[west_area_name] = [west_entry, west_start]
     town.define_area_transitions(transition_dict)
 
-def make_item_dict(town:Town, img_name:str, coordinates:list[tuple], image_array_len:int, tick_rate:int, offset:int):
-    item_dict = {}
-    item_dict['images'] = get_image_array(img_name, image_array_len)
-    item_dict['coordinates'] = coordinates
-    item_dict['tick rate'] = tick_rate
-    item_dict['offset'] = offset
-    item_dict[name] = img_name
-    town.add_to_draw_below_player(item_dict)
+def make_item_dict(town:Town, img_name:str, coordinates:list[tuple], img_array_len:int, tick_rate:int, offset:int):
+    item_name = img_name
+    sprite = Sprite(item_name, 2)
+    sprite.set_image_array(get_image_array(img_name, img_array_len))
+    sprite.set_sprite_coordinates(coordinates)
+    sprite.tickrate = tick_rate
+    sprite.animation_frame = offset
+    sprite.y_shift = 0
+    sprite.x_shift = 0
+    town.add_to_draw_below_player(sprite)
 
 def set_below_player_render_items(town:Town):
     img_name = 'RedFlowerbush'
@@ -119,3 +125,17 @@ def set_below_player_render_items(town:Town):
     make_item_dict(town, img_name, coords, 4, 60, 2)
     coords = [(11, 7), (3, 6)]
     make_item_dict(town, img_name, coords, 4, 60, 3)
+
+def make_sign(sign_name:str, sign_text:str, sign_position:tuple):
+    sign = Sign(sign_name)
+    sign.define_sign(sign_text, sign_position)
+    return sign
+
+def make_lootable_item(item:Item, coordinate:tuple, image_name=pokeball, sprite_count:int = 1):
+    loot_item = LootableItem(item.name)
+    loot_item.add_loot(item)
+    loot_item.set_coordinate(coordinate)
+    loot_item.get_image(sprite_count, image_name)
+    return loot_item
+
+

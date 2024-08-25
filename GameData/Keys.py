@@ -6,7 +6,7 @@ default, moves, output_info = 'defualt', 'moves', 'output info'
 # user inputs
 up, down, left, right = 'up', 'down', 'left', 'right'
 directional_inputs = [up, down, left, right]
-select, cancel = 'select', 'cancel'
+select, cancel, terminate = 'select', 'cancel', 'terminate'
 idle, walk, surfing, jump = 'idle', 'walk', 'surfing', 'jump'
 movement_types = [walk, idle, run, jump]
 

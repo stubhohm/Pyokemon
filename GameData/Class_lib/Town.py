@@ -1,5 +1,5 @@
 from ..Keys import no_weather, exit, leave
-from ..Keys import select, cancel, up, down, left, right
+from ..Keys import select, cancel, up, down, left, right, terminate
 from ..Keys import idle
 from ..Keys import navigation, wild
 from ..Keys import name, door_location
@@ -19,6 +19,7 @@ from .Route import Route
 from .Navigation import Navigation
 from .ActorBattleInfo import ActorBattleInfo
 from .LocalTrainers import LocalTrainers
+from .Interactable import Interactable
 from .UI import ui
 
 class Town():
@@ -32,6 +33,7 @@ class Town():
         self.navigation = Navigation()
         self.draw_below_player:list[Sprite] = []
         self.draw_above_player:list[Sprite] = []
+        self.interactables:list[Interactable] = []
         self.transition_dict = {}
 
     def set_sprite(self, sprite:Sprite):
@@ -41,6 +43,7 @@ class Town():
         self.buildings.append(building)
         building_dict = { name: building.name,
                     door_location: building.door_coordinate_in}
+        print(f'{self.name}, {building.name}')
         self.navigation.add_to_building_dicts(building_dict)
 
     def add_npc(self, npc:NPC):
@@ -55,14 +58,14 @@ class Town():
     def add_route(self, route:Route):
         self.navigation.adjacent_areas.append(route)
 
-    def add_to_draw_below_player(self, item_entry:dict):
-        item_name = item_entry[name]
-        sprite = Sprite(item_name, 2)
-        sprite.set_image_array(item_entry['images'])
-        sprite.set_sprite_coordinates(item_entry['coordinates'])
-        sprite.tickrate = item_entry['tick rate']
-        sprite.animation_frame = item_entry['offset']
+    def add_to_draw_below_player(self, sprite:Sprite):
         self.draw_below_player.append(sprite)
+
+    def add_to_draw_above_player(self, sprite:Sprite):
+        self.draw_above_player.append(sprite)
+
+    def add_interactable(self, interactable:Interactable):
+        self.interactables.append(interactable)
 
     def define_area_transitions(self, transition_dict:dict):
         self.navigation.transition_dict = transition_dict
@@ -91,7 +94,13 @@ class Town():
 
     def draw_items_below_player(self):
         for sprite in self.draw_below_player:
+            if not sprite:
+                continue
             self.draw_item_sprites(sprite)
+        for item in self.interactables:
+            if not item.sprite:
+                continue
+            self.draw_item_sprites(item.sprite)
             
     def draw_map(self):
         if not self.map:
@@ -108,7 +117,7 @@ class Town():
     def select_building(self):
         coordinate = self.navigation.get_coordinate()
         for building in self.buildings:
-            if type(building) != Building:
+            if not building:
                 continue
             if coordinate in building.door_coordinate_in:
                 return building
@@ -140,6 +149,25 @@ class Town():
                 encounter = tall_grass.check_for_encounter()
             if encounter:
                 return encounter
+
+    def check_item_interactions(self):
+        for item in self.interactables:
+            if not item:
+                continue
+            facing_space = self.navigation.get_coordinate_plus_one(self.navigation.get_coordinate())
+            if facing_space != item.coordinate:
+                continue
+            if item.is_lootable:
+                loot = item.interact()
+                if not loot:
+                    return
+                self.player.inventory.add_loot(loot)
+            else:
+                item.interact()
+
+    def check_interaction(self):
+        self.enter_a_building()
+        self.check_item_interactions()
 
     def battle_wild_pokemon(self, creature:Creature, player:Player):
         player.update_battle_info()
@@ -224,58 +252,20 @@ class Town():
         self.constructed_array = []
         self.navigation.set_player_start_pos()
         while in_area:
-            self.ticks += 1
-            self.draw_map()
             action = self.navigation.navigate_area()
+            self.draw_map()
+            self.ticks += 1
             if action in [exit, leave]:
                 return action
+            elif action == select:
+                self.check_interaction() 
             elif action:
                 self.resolve_action()
           
             if self.ticks % 60 == 0:
                 self.ticks = 0
-
-            key_input = None
-            if key_input:
-                print(key_input)
-            if key_input == 'm':
-                self.add_to_array()
-            if key_input == 'a':
-                self.top_left = self.navigation.get_coordinate()
-                print(self.top_left)
-            if key_input == 's':
-                self.bottom_right = self.navigation.get_coordinate()
-                print(self.bottom_right)
-            if key_input == 'c':
-                self.constructed_array = [] 
-            if key_input == 'p':
-                print(self.constructed_array)
-            if key_input == 't':
-                self.print_coordinates_lists()
-
             elif action == 'item':
                 self.player.use_an_item()
             if self.navigation.switch_area:
                 self.navigation.switch_area = False
                 return action
-
-    def get_action(self):
-        action = self.navigation.navigate_area()
-        if action in [exit, leave]:
-            return action
-        elif type(action) == Route:
-            return action
-        if action == select:
-            self.add_to_array()
-        if action == 'a':
-            self.top_left = self.navigation.get_coordinate()
-            print(self.top_left)
-        if action == 's':
-            self.bottom_right = self.navigation.get_coordinate()
-            print(self.bottom_right)
-        if action == 'c':
-            self.constructed_array = [] 
-        if action == 'p':
-            print(self.constructed_array)
-        if action == 'b':
-            return exit

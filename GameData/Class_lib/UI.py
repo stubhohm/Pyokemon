@@ -36,7 +36,6 @@ class UI():
         if not self.display_active:
             return
         for i in range(len(text)):
-            shown_text = text[:i]
             self.display.active.print(text)
             time.sleep(.05)
 

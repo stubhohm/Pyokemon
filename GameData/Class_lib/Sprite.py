@@ -15,6 +15,7 @@ class Sprite(pSprite):
         self.is_jumping = False
         self.direction = 1
         self.y_shift = 0
+        self.x_shift = 0
         self.x_center = None
         self.frames_in_loop = 1
         self.animation_frame = 0
@@ -44,7 +45,7 @@ class Sprite(pSprite):
         self.set_animation_loop(len(self.image_array))
 
     def set_image_from_clock_ticks(self, ticks:int):
-        if ticks% self.tickrate == 0:
+        if ticks % self.tickrate == 0:
             self.animation_frame += 1 
         self.animation_frame = self.animation_frame % self.frames_in_loop
         self.set_image(self.image_array[self.animation_frame])
@@ -54,7 +55,7 @@ class Sprite(pSprite):
 
     def jump_to_coordinate(self, coordinate:tuple, map_offset:pygame.math.Vector2):
         scaled_coordinate = (coordinate[0] * step_distance, (coordinate[1] + 1) * step_distance)
-        adjusted_coordinate = (scaled_coordinate[0] + map_offset.x, scaled_coordinate[1] + map_offset.y)
+        adjusted_coordinate = (scaled_coordinate[0] + map_offset.x + self.x_shift, scaled_coordinate[1] + map_offset.y, self.y_shift)
         self.pos.x = adjusted_coordinate[0]
         self.pos.y = adjusted_coordinate[1]
 

@@ -23,7 +23,7 @@ class Attack():
         self.attributes = AttackAttributes(element, base_power, points, accuracy, crit, target, type, contact)
         self.protection = False
         self.flee = False
-        self.stat_attributes = StatAttributes(name)
+        self.stat_attributes = StatAttributes(name, element)
         self.hp_attributes = HpAttributes(name)
         self.lingering_effect = LingeringEffect()
 
@@ -140,7 +140,7 @@ class Attack():
         status = self.attacker.status
         if not status.is_active:
             return False
-        if self.stat_attributes.check_confusion_block(status, self.attacker):
+        if self.stat_attributes.check_confusion_block(self.attacker.lingering_effects, self.attacker):
             damage = int(self.get_base_damage()) * -1
             self.attacker.change_hp(damage)
             return True

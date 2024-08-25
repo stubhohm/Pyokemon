@@ -1,5 +1,5 @@
 from ..Keys import route, wild, npc
-from ..Keys import exit, leave
+from ..Keys import exit, leave, select
 from ..Keys import no_weather
 from ..Keys import navigation, battle, name, door_location
 from .Sprite import Sprite
@@ -12,6 +12,7 @@ from .Item import Item
 from .Player import Player
 from .LocalTrainers import LocalTrainers
 from .Navigation import Navigation
+from .Interactable import Interactable
 from .UI import ui
 
 
@@ -25,6 +26,7 @@ class Route():
         self.adjacent_areas:list = []
         self.navigation = Navigation()
         self.weather = no_weather
+        self.interactables:list[Interactable] = []
         self.draw_below_player:list[Sprite] = []
         self.draw_above_player:list[Sprite] = []
 
@@ -46,14 +48,12 @@ class Route():
     def add_adjacent_area(self, area_class_object):
         self.navigation.adjacent_areas.append(area_class_object)
 
-    def add_to_draw_below_player(self, item_entry:dict):
-        item_name = item_entry[name]
-        sprite = Sprite(item_name, 2)
-        sprite.set_image_array(item_entry['images'])
-        sprite.set_sprite_coordinates(item_entry['coordinates'])
-        sprite.tickrate = item_entry['tick rate']
-        sprite.animation_frame = item_entry['offset']
+    
+    def add_to_draw_below_player(self, sprite:Sprite):
         self.draw_below_player.append(sprite)
+
+    def add_to_draw_above_player(self, sprite:Sprite):
+        self.draw_above_player.append(sprite)
 
     def define_area_transitions(self, transition_dict:dict):
         self.navigation.transition_dict = transition_dict
@@ -109,6 +109,25 @@ class Route():
             if encounter:
                 return encounter
 
+    def check_item_interactions(self):
+        for item in self.interactables:
+            if not item:
+                continue
+            facing_space = self.navigation.get_coordinate_plus_one(self.navigation.get_coordinate())
+            if facing_space != item.coordinate:
+                continue
+            if item.is_lootable:
+                loot = item.interact()
+                if not loot:
+                    return
+                self.player.inventory.add_loot(loot)
+            else:
+                item.interact()
+
+    def check_interaction(self):
+        self.check_item_interactions()
+        
+
     def determine_encounter(self):
         '''
         Takes player position to see they enouncter a trainer or wild pokemon.'
@@ -150,6 +169,8 @@ class Route():
             
             if action in [exit, leave]:
                 return action
+            if action == select:
+                self.check_interaction()
             if action:
                 encounter = self.determine_encounter()
             if type(encounter) == Creature:

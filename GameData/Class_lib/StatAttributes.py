@@ -11,9 +11,10 @@ from .UI import ui
 
 
 class StatAttributes():
-    def __init__(self, name):
+    def __init__(self, name, element):
         self.status = None
         self.name = name
+        self.type = element
         self.modifiying_stat = False
         self.self_change_stats = False
         self.foe_change_stats = False
@@ -115,27 +116,28 @@ class StatAttributes():
             attacker_stats.modify_stat(stat, change)
     
     def check_foe_stat_change(self, target_stats:Stats):
+        print(self.foe_change_stats)
         if not self.foe_change_stats:
             return
         rng = rand100()
+        print(rng, self.foe_change_proc)
         if rng > self.foe_change_proc:
             return
         for stat in self.foe_change_stats:
-            target_stats.modify_stat(stat, self.foe_change_value)
+            self.modify_ability(target_stats, self.foe_change_value, stat)
 
     def modify_ability(self, target:Stats, modifier, stat):
         target.ability.check_attack_type_stat_modifying(self, target)
-        reset = self.stat_reset
-        blocked_or_maxed = target.modify_stat(stat, modifier, reset)
+        blocked_or_maxed = target.modify_stat(stat, modifier)
         if blocked_or_maxed:
             return
         adj_array = ['slightly', 'sharply', 'greatly']
-        mod_abs = abs(modifier)
-        if stat < 0:
+        mod_abs = abs(modifier) - 1
+        if modifier < 0:
             change = 'lowered'
         else:
             change = 'raised'
-        text = f"{target.name}'s {stat} was {adj_array[mod_abs - 1]} {change}."
+        text = f"{target.name}'s {stat} was {adj_array[mod_abs]} {change}."
         self.print_to_terminal(text)
 
 
