@@ -21,14 +21,15 @@ player_character.set_inventory(Inventory())
 player_character.set_combat_inputs(PlayerCombatInput())
 player_character.pc = PC()
 player_character.set_roster()
-torchic = instance_torchic(15)
-wurmple = instance_wurmple(3)
+torchic = instance_torchic(2)
 player_character.add_pokemon_to_roster(torchic)
-torchic.stats.leveling.add_exp(425, True)
-player_character.add_pokemon_to_roster(wurmple)
 
 def look_for_pokemon_center(area:Town|Route, player_character:Player):
+    print('looking for center')
+    print(f'{area.name}')
+    print(f'{len(area.buildings)}')
     for building in area.buildings:
+        print(f'{building.name}')
         if not building.healing_station:
             continue
         building.player = player_character
@@ -41,23 +42,23 @@ def look_for_pokemon_center(area:Town|Route, player_character:Player):
 def game_loop():
     player_character.set_battle_info()
     area = generate_area()
-    while not player_character.battle_info.white_out:
-        if not ui.input.is_playing:
-            return False
-        print('')
-        action = area.active.enter_area(player_character)
-        if type(action) == Route or type(action) == Town:
-            area.set_active_area(action)
-        if action == exit:
-            return False
-    if look_for_pokemon_center(area.active, player_character):
-        return True
-    else:
-        for adj_area in area.active.adjacent_areas:
-            if look_for_pokemon_center(adj_area, player_character):
-                area.active = area
-                return True
-    
+    while ui.input.is_playing:
+        while not player_character.battle_info.white_out:
+            if not ui.input.is_playing:
+                return False
+            print('')
+            action = area.active.enter_area(player_character)
+            if type(action) == Route or type(action) == Town:
+                area.set_active_area(action)
+            if action == exit:
+                return False
+        if found_center:= look_for_pokemon_center(area.active, player_character):
+            return found_center
+        else:
+            for adj_area in area.active.adjacent_areas:
+                if look_for_pokemon_center(adj_area, player_character):
+                    area.active = area
+        
 def main():
     playing = True
     while playing:

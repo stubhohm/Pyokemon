@@ -75,6 +75,8 @@ class StatAttributes():
             if effect.name == confused:
                 status = effect
                 break
+        if not status:
+            return False
         rng = rand100()
         if status:
             text = f'{attacker.name} is {status.name}.'
