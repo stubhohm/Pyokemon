@@ -3,9 +3,6 @@ from ..Keys import select, cancel, up, down, left, right, terminate
 from ..Keys import idle
 from ..Keys import navigation, wild
 from ..Keys import name, door_location
-from ..Colors import black
-from ..Constants import step_distance, screen_size
-from ..Function_Lib.General_Functions import get_confirmation, try_again, rand100
 from .ActorBattleInfo import ActorBattleInfo
 from .Sprite import Sprite
 from .Creature import Creature
@@ -107,7 +104,7 @@ class Town():
             print('no map')
             return
         
-        ui.display.active.set_player_sprite(self.player.active_sprite)
+        ui.display.active.set_player_sprite(self.player.animation.active_sprite)
         self.map.draw(ui.display.active.window)
         self.draw_items_below_player()
         ui.display.active.draw_player()
@@ -131,8 +128,10 @@ class Town():
             building.enter_building(self.player)
             self.navigation.starting_position = (building.door_coordinate_in[-1][0], building.door_coordinate_in[-1][1] + 1)
             self.navigation.set_player_start_pos()
-            self.player.set_last_direction(down)
-            self.player.set_movement_type(idle)
+            self.player.animation.set_last_direction(down)
+            self.player.animation.set_movement_type(idle)
+            if building.healing_station:
+                self.player.last_healing_location = self
 
     def talk_to_npc(self):
         pass

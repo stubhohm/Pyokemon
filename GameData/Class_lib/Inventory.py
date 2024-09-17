@@ -13,10 +13,20 @@ class Inventory():
         self.healing = None
         self.status = None
         self.capture = None
+        self.money = 0
         self.healing_items:dict = {}
         self.status_items:dict = {}
         self.capture_items:dict = {}
         self.item_dictionarys:list[dict] = [self.healing_items, self.status_items, self.capture_items]
+
+    def deposit_money(self, value:int):
+        self.money += value
+    
+    def withdraw_money(self, value:int):
+        self.money -= value
+
+    def get_money(self):
+        return self.money
 
     def print_inventory_list(self):
         for dictionary in self.item_dictionarys:
@@ -223,3 +233,6 @@ class Inventory():
                 self.add_healing_items(item, 1)
             elif type(item) == StatusItem:
                 self.add_status_items(item, 1)
+
+    def add_item(self, item:Item):
+        self.add_loot([item])

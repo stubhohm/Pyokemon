@@ -157,8 +157,6 @@ class Pokemart(Building):
         target_coord = self.navigation.get_coordinate_plus_one(self.navigation.get_coordinate())
         if target_coord in self.shop_counter.coordinates:
             self.shop_counter.go_to_counter(self.player.inventory)
-            
-
 
 class Gym(Building):
     def __init__(self, name: str, trainers:list[ActorBattleInfo], leader:ActorBattleInfo) -> None:
@@ -169,7 +167,6 @@ class Gym(Building):
 
     def set_gym_leader(self, gym_leader:ActorBattleInfo):
         self.trainers.set_gym_leader(gym_leader)
-
 
 def make_building(name:str, entry_coords:list[tuple], exit_coords:list[tuple], map, blocked_spaces:dict):
     bbuilding = Building(name)

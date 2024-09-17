@@ -37,7 +37,20 @@ def look_for_pokemon_center(area:Town|Route, player_character:Player):
         player_character.battle_info.white_out = False
         print(f'You recovered at the nearby {building.name}.')
         return True
+    print(f'No pokemon center in {area.name}')
     return False
+
+def go_to_last_pokemoncenter(player_character:Player):
+    area = player_character.last_healing_location
+    for building in area.buildings:
+        print(f'{building.name}')
+        if not building.healing_station:
+            continue
+        building.player = player_character
+        building.heal_roster()
+        player_character.battle_info.white_out = False
+        return area
+
 
 def game_loop():
     player_character.set_battle_info()
@@ -52,12 +65,8 @@ def game_loop():
                 area.set_active_area(action)
             if action == exit:
                 return False
-        if found_center:= look_for_pokemon_center(area.active, player_character):
-            return found_center
-        else:
-            for adj_area in area.active.adjacent_areas:
-                if look_for_pokemon_center(adj_area, player_character):
-                    area.active = area
+        if player_character.battle_info.white_out:
+            area.active = go_to_last_pokemoncenter(player_character)
         
 def main():
     playing = True
