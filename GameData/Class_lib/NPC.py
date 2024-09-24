@@ -1,12 +1,20 @@
 from ..Keys import up, down, left, right
 from .Creature import Creature
 from .Quests import Quest, Trade, Fetch, Delivery
+from .Interactable import Interactable
 
 invert_direction = {up: down, down:up, left:right, right:left}
 
 class NPC():
     def __init__(self, name:str) -> None:
         self.set_name(name)
+        self.interaction = Interactable(name)
+
+    def set_coordiante(self, coordiante:tuple[int, int]):
+        self.interaction.set_coordinate(coordiante)
+
+    def get_coordinate(self):
+        return self.interaction.coordinate
 
     def set_name(self, name:str):
         self.name = name

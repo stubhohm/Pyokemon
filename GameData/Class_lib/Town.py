@@ -98,16 +98,24 @@ class Town():
             if not item.sprite:
                 continue
             self.draw_item_sprites(item.sprite)
-            
+          
     def draw_map(self):
         if not self.map:
             print('no map')
             return
-        
+
+    def draw_npcs(self, over_player:bool):
+        player_pos = self.player.animation.active_sprite.get_pos()
+        for npc in self.npcs:
+            npc_position = npc.interaction.coordinate
+            npc_is_below = (npc_position[1] < player_pos)
+
         ui.display.active.set_player_sprite(self.player.animation.active_sprite)
         self.map.draw(ui.display.active.window)
         self.draw_items_below_player()
+        self.draw_npcs(False)
         ui.display.active.draw_player()
+        self.draw_npcs(True)
         self.draw_items_above_player()
         ui.display.active.update()
 
