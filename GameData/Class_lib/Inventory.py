@@ -227,12 +227,16 @@ class Inventory():
 
     def add_loot(self, loot:list[Item]):
         for item in loot:
+            if not item:
+                continue
+            print(item.name)
             if type(item) == CaptureItem:
                 self.add_capture_items(item, 1)
             elif type(item) == HealingItem:
                 self.add_healing_items(item, 1)
             elif type(item) == StatusItem:
                 self.add_status_items(item, 1)
+        self.print_inventory_list()
 
     def add_item(self, item:Item):
         self.add_loot([item])

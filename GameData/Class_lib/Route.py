@@ -89,7 +89,7 @@ class Route():
             print('no map')
             return
         
-        ui.display.active.set_player_sprite(self.player.active_sprite)
+        ui.display.active.set_player_sprite(self.player.animation.active_sprite)
         self.map.draw(ui.display.active.window)
         self.draw_items_below_player()
         ui.display.active.draw_player()

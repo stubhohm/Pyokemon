@@ -9,9 +9,15 @@ class Quest():
         self.name = name
         self.status = not_taken
         self.target_npc_name = None
+        self.quest_item = None
+        self.quest_rewards = [None]
 
     def check_quest_status(self):
-        print(self.status)
+        if self.get_quest_status() in [not_taken, taken, rewarded]:
+            return None
+        if self.get_quest_status() == completed:
+            self.set_quest_status(rewarded)
+            return self.get_quest_rewards() 
 
     def get_quest_status(self):
         return self.status
@@ -57,6 +63,10 @@ class Quest():
     def complete_quest(self):
         self.set_quest_status(completed)
 
+    def reward_claimed(self):
+        self.set_quest_rewards([None])
+        self.set_quest_status(rewarded)
+
     def initiate_quest(self):
         if self.get_quest_status() != not_taken:
             return False
@@ -98,14 +108,6 @@ class Delivery(Quest):
             return 
         if get_terminal_confirmation(self.get_delivery_dialog()):
             self.complete_quest()
-
-    def check_quest_status(self):
-        self.check_quest_status()
-        if self.get_quest_status() in [not_taken, taken, rewarded]:
-            return None
-        if self.get_quest_status() == completed:
-            self.set_quest_status(rewarded)
-            return self.get_quest_rewards() 
         
 class Trade(Quest):
     def __init__(self, name: str) -> None:
@@ -130,4 +132,19 @@ class Trade(Quest):
     def check_quest_status(self):
         return super().check_quest_status()
 
-    
+class Gift(Quest):
+    def __init__(self, name) -> None:
+        super().__init__(name)
+        self.completed_dialog = 'undefined'
+
+    def set_completed_dialog(self, dialog:str):
+        self.completed_dialog = dialog
+
+    def get_completed_dialog(self):
+        return self.completed_dialog
+
+    def progress_quest(self):
+        if self.get_quest_status() in [completed, rewarded]:
+            get_terminal_confirmation(self.get_completed_dialog())
+        self.complete_quest()
+        return self.get_quest_rewards()

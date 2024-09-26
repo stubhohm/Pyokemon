@@ -10,8 +10,6 @@ from GameData.Class_lib.PC import PC
 from GameData.Class_lib.Area import Area
 from GameData.Class_lib.PlayerCombatInput import PlayerCombatInput
 from GameData.Class_lib.Inventory import Inventory
-from GameData.Item_List.ItemsList import make_potion, make_max_potion, make_antidote
-from GameData.Item_List.ItemsList import make_pokeball
 from GameData.Keys import player, wild, npc, exit
 from GameData.Keys import male, female
 

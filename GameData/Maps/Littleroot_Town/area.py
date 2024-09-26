@@ -6,11 +6,14 @@ from ...Class_lib.TallGrass import TallGrass
 from ...Class_lib.Sprite import Sprite
 from ...Interactable_Items.Sign import Sign
 from ...Interactable_Items.LootableItem import LootableItem
+from ...Function_Lib.Generate_NPCs import oldale_woman
 from ...Item_List.ItemsList import Item, make_potion
 from ...Building_List.BuildingList import make_building
 from ...Sprites.MapComponents.MapImports import generate_littleroot_town_map as generate_town_map
 from ...Sprites.MapComponents.MapImports import generate_rivals_house, generate_players_house, generate_birchs_lab
 from ...Sprites.MapComponents.TerrainItemsImports import get_image_array
+from ...Sprites.MapComponents.NPCImports import get_npc_image_array
+from ..TownConstructors import make_lootable_item, make_sign
 from .TransitionArrays import north_entry, north_start, east_entry, east_start
 from .TransitionArrays import west_entry, west_start, south_entry, south_start
 from .ValidationDict import birch_lab_blocked_spaces, player_house_blocked_dict, rival_house_blocked_dict
@@ -41,7 +44,7 @@ def set_buildings(town:Town):
     birch_lab = make_building("Birch's Lab", [(12, 16)], [(9, 13), (10, 13)], map, birch_lab_blocked_spaces)
 
     map = generate_players_house()
-    player_house = make_building('House 2',[(10, 8)] , [(12,11),(13,11)], map, player_house_blocked_dict)
+    player_house = make_building('House 1',[(10, 8)] , [(12,11),(13,11)], map, player_house_blocked_dict)
 
     map = generate_rivals_house()
     rival_house = make_building('House 2', [(19, 8)], [(5, 11),(6, 11)], map, rival_house_blocked_dict)
@@ -63,6 +66,11 @@ def set_interactables(town:Town):
     town.add_interactable(littleroot_town_sign)
     town.add_interactable(lootable_potion)
 
+def set_npcs(town:Town):
+    potion_woman_npc = oldale_woman()
+    potion_woman_npc.sprite = make_item_dict(potion_woman_npc.name, [potion_woman_npc.interaction.coordinate], 1, 60, 0, True)
+    town.add_npc(potion_woman_npc)
+
 # Primary Called Function by other documents
 def generate_town():
     town = Town(town_name)   
@@ -75,6 +83,7 @@ def generate_town():
     set_buildings(town)
     set_below_player_render_items(town)
     set_interactables(town)
+    set_npcs(town)
 
     return town
 
@@ -82,11 +91,11 @@ def generate_town():
 def set_below_player_render_items(town:Town):
     img_name = 'Flowerbush'
     coords = [ (24,9), (23,10), (8, 17), (21, 10), (10, 17),  (9, 18), (10, 18)]
-    make_item_dict(town, img_name, coords, 4, 60, 2)
+    town.add_to_draw_below_player(make_item_dict(img_name, coords, 4, 60, 2))
     coords = [(5, 8),  (5, 10), (8, 10), (9, 17),]
-    make_item_dict(town, img_name, coords, 4, 60, 1)
+    town.add_to_draw_below_player(make_item_dict(img_name, coords, 4, 60, 1))
     coords = [(24,7),  (23,8), (6,9), (8, 18)]
-    make_item_dict(town, img_name, coords, 4, 60, 3)
+    town.add_to_draw_below_player(make_item_dict(img_name, coords, 4, 60, 3))
 
 # Below functions occur with no input after dictionaries and arrays are made in the other files
 
@@ -110,25 +119,16 @@ def set_transitions(town:Town):
 
 # Helper function to make item dicts for drawing above and below player
 
-def make_item_dict(town:Town, img_name:str, coordinates:list[tuple], img_array_len:int, tick_rate:int, offset:int):
+def make_item_dict(img_name:str, coordinates:list[tuple], img_array_len:int, tick_rate:int, offset:int, is_npc = False):
     item_name = img_name
     sprite = Sprite(item_name, 2)
-    sprite.set_image_array(get_image_array(img_name, img_array_len))
+    if is_npc:
+        sprite.set_image_array(get_npc_image_array(img_name, img_array_len))
+    else:
+        sprite.set_image_array(get_image_array(img_name, img_array_len))
     sprite.set_sprite_coordinates(coordinates)
     sprite.tickrate = tick_rate
     sprite.animation_frame = offset
     sprite.y_shift = 0
     sprite.x_shift = 0
-    town.add_to_draw_below_player(sprite)
-
-def make_sign(sign_name:str, sign_text:str, sign_position:tuple):
-    sign = Sign(sign_name)
-    sign.define_sign(sign_text, sign_position)
-    return sign
-
-def make_lootable_item(item:Item, coordinate:tuple, image_name=pokeball, sprite_count:int = 1):
-    loot_item = LootableItem(item.name)
-    loot_item.add_loot(item)
-    loot_item.set_coordinate(coordinate)
-    loot_item.get_image(sprite_count, image_name)
-    return loot_item
+    return sprite
