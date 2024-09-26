@@ -10,7 +10,7 @@ class Interactable():
         self.sprite:Sprite = None
         self.is_lootable = False
         self.is_healing = False
-        self.coordinate:tuple = None
+        self.coordinate:tuple[int, int] = None
 
     def print_to_terminal(self, text):
         ui.display.active.battle_terminal.slow_print(text, terminal_font_size, black)
