@@ -20,7 +20,9 @@ player_character.set_combat_inputs(PlayerCombatInput())
 player_character.pc = PC()
 player_character.set_roster()
 torchic = instance_torchic(2)
+wurmple = instance_wurmple(3)
 player_character.add_pokemon_to_roster(torchic)
+player_character.add_pokemon_to_roster(wurmple)
 
 def look_for_pokemon_center(area:Town|Route, player_character:Player):
     print('looking for center')

@@ -43,7 +43,8 @@ class Player():
         return self.quests
 
     def print_roster(self):
-        for i, creature in self.roster:
+        print('printing roster')
+        for i, creature in enumerate(self.roster):
             text = f'{i+1}: {creature.name}'
             print(text)
 

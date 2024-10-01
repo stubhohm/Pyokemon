@@ -127,6 +127,7 @@ class Inventory():
                 self.add_status_items(item, 1)
             elif type(item) == KeyItem:
                 self.add_key_items(item, 1)
+        self.update_inventory()
 
     def add_item(self, item:Item):
         self.add_loot([item])

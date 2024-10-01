@@ -3,6 +3,7 @@ from .Creature import Creature
 from .Quests import Quest, Trade, Fetch, Delivery
 from ..Interactable_Items.Sign import Sign
 from .Sprite import Sprite
+from .Player import Player
 
 invert_direction = {up: down, down:up, left:right, right:left}
 
@@ -32,11 +33,11 @@ class NPC():
             return
         return self.quest
 
-    def face_player(self, player):
+    def face_player(self, player:Player):
         direction = player.animation.get_last_direction()
         npc_direction = invert_direction.get(direction, down)
         
-    def interact(self, player):
+    def interact(self, player:Player):
         self.face_player(player)
         if quest := self.get_quest():
             if quest.initiate_quest():
@@ -46,10 +47,15 @@ class NPC():
             if not isinstance(quest, Quest):
                 continue
             quest.set_current_npc_name(self.name)
-            quest.progress_quest()
+            if type(quest) == Trade:
+                quest.progress_quest(player.roster)
+            else:
+                quest.progress_quest()
             if rewards:= quest.check_quest_status():
-                player.inventory.add_loot(rewards)
-                player.inventory.update_inventory()
+                if isinstance(rewards, Creature):
+                    player.add_pokemon_to_roster(rewards)
+                else:
+                    player.inventory.add_loot(rewards)
                 quest.reward_claimed()
                 return
         self.interaction.interact()     

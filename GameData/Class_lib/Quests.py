@@ -14,7 +14,7 @@ class Quest():
 
     def define(self, name:str, target_npc:str, initial_dialog:str, quest_item:Item, rewards:list[Item]):
         self.name = name
-        self.target_npc_name = target_npc
+        self.set_target_npc_name(target_npc)
         self.set_initial_dialog(initial_dialog)
         self.set_quest_items(quest_item)
         self.set_quest_rewards(rewards)
@@ -39,6 +39,16 @@ class Quest():
         if not self.current_npc_name:
             return None
         return self.current_npc_name
+
+    def set_target_npc_name(self, npc_name):
+        if type(npc_name) != str:
+            return
+        self.target_npc_name = npc_name
+
+    def get_target_npc_name(self):
+        if not self.target_npc_name:
+            return None
+        return self.target_npc_name
 
     def set_initial_dialog(self, initial_dialog:str):
         self.initial_dialog = initial_dialog
@@ -126,30 +136,68 @@ class Delivery(Quest):
         if get_terminal_confirmation(self.get_delivery_dialog()):
             self.complete_quest()
             self.quest_item.use_item(None)
-            return self.get_quest_rewards()
-        
+      
 class Trade(Quest):
     def __init__(self) -> None:
         super().__init__()
 
+    def define(self, name:str, target_npc:str, initial_dialog:str, trade_dialog:str, requested_pkmn: Creature, reward_pmkn: Creature):
+        super().define(name, target_npc, initial_dialog, None, None)
+        self.set_requested_pokemon(requested_pkmn)
+        self.set_given_pokemon(reward_pmkn)        
+        self.set_trade_dialog(trade_dialog)
+
+
     def set_requested_pokemon(self, requested_pokemon:Creature):
-        self.requested_pokemon = requested_pokemon
+        self.requested_pokemon = requested_pokemon.name
 
     def get_requested_pokemon(self):
         if not self.requested_pokemon:
             return None
         return self.requested_pokemon
-    
-    def set_given_pokemon(self, given_pokemon:Creature):
-        self.given_pokemon = given_pokemon
 
+    def set_given_pokemon(self, rewarded_pokemon:Creature):
+        self.rewarded_pokemon = rewarded_pokemon
+        
     def get_given_pokemon(self):
-        if not self.given_pokemon:
+        if not self.rewarded_pokemon:
             return None
-        return self.given_pokemon
+        return self.rewarded_pokemon
     
+    def get_trade_dialog(self):
+        if not self.trade_dialog:
+            return 'Not defined'
+        return self.trade_dialog
+    
+    def set_trade_dialog(self, dialog:str):
+        if type(dialog) != str:
+            return
+        self.trade_dialog = dialog
+
     def check_quest_status(self):
-        return super().check_quest_status()
+        if self.get_quest_status() in [not_taken, taken, rewarded]:
+            return None
+        if self.get_quest_status() == completed:
+            self.set_quest_status(rewarded)
+            return self.get_given_pokemon() 
+
+    def progress_quest(self, roster:list[Creature]):
+        print('attempt progress')
+        if super().progress_quest():
+            return
+        if self.get_current_npc_name() != self.get_target_npc_name():
+            return 
+        request = self.get_requested_pokemon()
+        if not any(creature.name == request for creature in roster):
+            return
+        print('we got a match')
+        if get_terminal_confirmation(self.get_trade_dialog()):
+            self.complete_quest()
+            for creature in roster:
+                if creature.name == request:
+                    roster.remove(creature)
+                    self.set_quest_status(completed)
+                    break
 
 class Gift(Quest):
     def __init__(self) -> None:
@@ -170,4 +218,3 @@ class Gift(Quest):
         if self.get_quest_status() in [completed, rewarded]:
             get_terminal_confirmation(self.get_completed_dialog())
         self.complete_quest()
-        return self.get_quest_rewards()
