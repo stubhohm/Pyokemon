@@ -6,7 +6,7 @@ from ...Class_lib.TallGrass import TallGrass
 from ...Class_lib.Sprite import Sprite
 from ...Interactable_Items.Sign import Sign
 from ...Interactable_Items.LootableItem import LootableItem
-from ...Function_Lib.Generate_NPCs import oldale_woman
+from ...Function_Lib.Generate_NPCs import test_woman, test_recipient
 from ...Item_List.ItemsList import Item, make_potion
 from ...Building_List.BuildingList import make_building
 from ...Sprites.MapComponents.MapImports import generate_littleroot_town_map as generate_town_map
@@ -67,9 +67,13 @@ def set_interactables(town:Town):
     town.add_interactable(lootable_potion)
 
 def set_npcs(town:Town):
-    potion_woman_npc = oldale_woman()
-    potion_woman_npc.sprite = make_item_dict(potion_woman_npc.name, [potion_woman_npc.interaction.coordinate], 1, 60, 0, True)
-    town.add_npc(potion_woman_npc)
+    test_woman_npc = test_woman()
+    test_woman_npc.sprite = make_item_dict(test_woman_npc.name, [test_woman_npc.interaction.coordinate], 1, 60, 0, True)
+    test_recipient_npc = test_recipient()
+    test_recipient_npc.sprite = make_item_dict(test_woman_npc.name, [test_recipient_npc.interaction.coordinate], 1, 60, 0, True)
+    
+    town.add_npc(test_woman_npc)
+    town.add_npc(test_recipient_npc)
 
 # Primary Called Function by other documents
 def generate_town():

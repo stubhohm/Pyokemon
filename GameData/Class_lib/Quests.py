@@ -5,12 +5,19 @@ from .UI import ui
 from ..Function_Lib.General_Functions import get_terminal_confirmation
 
 class Quest():
-    def __init__(self, name:str) -> None:
-        self.name = name
+    def __init__(self) -> None:
+        self.name = 'unnamed quest'
         self.status = not_taken
         self.target_npc_name = None
         self.quest_item = None
         self.quest_rewards = [None]
+
+    def define(self, name:str, target_npc:str, initial_dialog:str, quest_item:Item, rewards:list[Item]):
+        self.name = name
+        self.target_npc_name = target_npc
+        self.set_initial_dialog(initial_dialog)
+        self.set_quest_items(quest_item)
+        self.set_quest_rewards(rewards)
 
     def check_quest_status(self):
         if self.get_quest_status() in [not_taken, taken, rewarded]:
@@ -79,13 +86,18 @@ class Quest():
         return None
 
 class Fetch(Quest):
-    def __init__(self, name: str) -> None:
-        super().__init__(name)
+    def __init__(self) -> None:
+        super().__init__()
 
 class Delivery(Quest):
-    def __init__(self, name: str) -> None:
-        super().__init__(name)
+    def __init__(self) -> None:
+        super().__init__()
     
+    def define(self, name:str, target_npc:str, initial_dialog:str, delivery_dialog:str, quest_item: Item, rewards: list[Item]):
+        super().define(name, target_npc, initial_dialog, quest_item, rewards)
+        self.set_recipient_name(target_npc)
+        self.set_delivery_dialog(delivery_dialog)
+
     def set_recipient_name(self, recipient_name:str):
         self.recipient_name = recipient_name
 
@@ -108,10 +120,11 @@ class Delivery(Quest):
             return 
         if get_terminal_confirmation(self.get_delivery_dialog()):
             self.complete_quest()
+            return self.get_quest_rewards()
         
 class Trade(Quest):
-    def __init__(self, name: str) -> None:
-        super().__init__(name)
+    def __init__(self) -> None:
+        super().__init__()
 
     def set_requested_pokemon(self, requested_pokemon:Creature):
         self.requested_pokemon = requested_pokemon
@@ -133,9 +146,13 @@ class Trade(Quest):
         return super().check_quest_status()
 
 class Gift(Quest):
-    def __init__(self, name) -> None:
-        super().__init__(name)
+    def __init__(self) -> None:
+        super().__init__()
         self.completed_dialog = 'undefined'
+
+    def define(self, name:str, target_npc: str, initial_dialog: str,  completed_dialog:str, quest_item: Item, rewards: list[Item]):
+        super().define(name, target_npc, initial_dialog, quest_item, rewards)
+        self.set_completed_dialog(completed_dialog)
 
     def set_completed_dialog(self, dialog:str):
         self.completed_dialog = dialog

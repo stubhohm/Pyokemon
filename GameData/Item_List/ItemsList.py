@@ -91,3 +91,8 @@ def make_masterball():
     item = CaptureItem(greatball, 1, 'The best ball. It never misses.')
     item.set_ball_multipler(255)
     return item
+
+
+def make_mail():
+    item = KeyItem('Mail', 1, 'One Peice of Mail for testig')
+    return item

@@ -112,14 +112,7 @@ class Town():
     def draw_map(self):
         if not self.map:
             print('no map')
-            return
-
-    def draw_npcs(self, over_player:bool):
-        player_pos = self.player.animation.active_sprite.get_pos()
-        for npc in self.npcs:
-            npc_position = npc.interaction.coordinate
-            npc_is_below = (npc_position[1] < player_pos)
-
+            return  
         ui.display.active.set_player_sprite(self.player.animation.active_sprite)
         self.map.draw(ui.display.active.window)
         self.draw_items_below_player()
@@ -127,7 +120,17 @@ class Town():
         ui.display.active.draw_player()
         self.draw_npcs(False)
         self.draw_items_above_player()
-        ui.display.active.update()
+        ui.display.active.update()       
+
+    def draw_npcs(self, over_player:bool):
+        player_pos = self.player.animation.active_sprite.get_pos()
+        for npc in self.npcs:
+            npc_position = npc.interaction.coordinate
+            npc_is_below = (npc_position[1] < player_pos[1])
+            if npc_is_below and over_player:
+                self.draw_item_sprites(npc.sprite)
+            else:
+                self.draw_item_sprites(npc.sprite)
 
     def select_building(self):
         coordinate = self.navigation.get_coordinate()

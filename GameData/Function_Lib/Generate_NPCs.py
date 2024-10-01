@@ -1,16 +1,21 @@
 from ..Class_lib.NPC import NPC
 from ..Class_lib.Quests import Quest, Trade, Delivery, Fetch, Gift
-from ..Item_List.ItemsList import make_potion
+from ..Item_List.ItemsList import make_potion, make_mail
 
-
-def oldale_woman():
-    quest = Gift('Potions from Oldale Woman')
+def test_recipient():
+    npc = NPC('recipient')
+    npc.set_position((15,15))
+    return npc
+    
+def test_woman():
+    quest = Delivery()
     rewards = []
     for i in range(5):
         rewards.append(make_potion())
-    quest.set_quest_rewards(rewards)
-    quest.set_initial_dialog('Being a trainer is tough, have some potions!')
-    quest.set_completed_dialog('I hope those potions work well for you!')
+    quest_item = make_mail()
+    name = 'Potions from Oldale Woman'
+    tgt_npc = 'recipient'
+    quest.define(name, tgt_npc, 'Start Quest dlg', 'End Quest dlg', quest_item, rewards)
     npc = NPC('Oldale_Woman')
     npc.set_quest(quest)
     npc.set_position((10,10))

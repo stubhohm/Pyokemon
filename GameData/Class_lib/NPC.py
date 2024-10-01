@@ -11,6 +11,7 @@ class NPC():
         self.set_name(name)
         self.interaction = Interactable(name)
         self.sprite = Sprite(name, 2)
+        self.quest = None
 
     def set_name(self, name:str):
         self.name = name
