@@ -21,7 +21,16 @@ class ItemPouch ():
         item.quantity = quantity + value
         entry = {k_item:item, quant:quantity + value}
         self.contents[item.name] = entry
-        
+
+    def remove_item(self, item_name:str):
+        '''Returns True if an item was removed due to having none'''
+        if not self.has_items:
+            return False
+        if self.contents[item_name][quant] == 0:
+            del self.contents[item_name]
+            return True
+        return False
+
     def get_item(self, item_name:str):
         if not self.has_items:
             return None

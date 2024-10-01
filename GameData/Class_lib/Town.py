@@ -169,12 +169,9 @@ class Town():
 
     def check_npc_interactions(self):
         for npc in self.npcs:
-            print(npc.name)
             if not npc:
                 continue
             facing_space = self.navigation.get_coordinate_plus_one(self.navigation.get_coordinate())
-            print(facing_space)
-            print(npc.interaction.coordinate)
             if facing_space != npc.interaction.coordinate:
                 continue
             npc.interact(self.player)
@@ -198,6 +195,7 @@ class Town():
         self.enter_a_building()
         self.check_item_interactions()
         self.check_npc_interactions()
+        self.player.inventory.update_inventory()
 
     def battle_wild_pokemon(self, creature:Creature, player:Player):
         player.update_battle_info()

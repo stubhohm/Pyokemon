@@ -83,7 +83,11 @@ class Quest():
         return False
 
     def progress_quest(self):
-        return None
+        '''Returns True if the quest is completed or rewarded.'''
+        if self.get_quest_status() in [completed, rewarded]:
+            return True
+        else:
+            return False
 
 class Fetch(Quest):
     def __init__(self) -> None:
@@ -115,11 +119,13 @@ class Delivery(Quest):
         return self.delivery_dialog
 
     def progress_quest(self):
-        parent_output = super().progress_quest()
+        if super().progress_quest():
+            return
         if self.get_current_npc_name() != self.get_recipient_name():
             return 
         if get_terminal_confirmation(self.get_delivery_dialog()):
             self.complete_quest()
+            self.quest_item.use_item(None)
             return self.get_quest_rewards()
         
 class Trade(Quest):

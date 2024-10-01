@@ -28,22 +28,29 @@ class Inventory():
         return self.money
 
     def print_inventory_list(self):
-        for attributes in dir(self):
-            if not isinstance(attributes, ItemPouch):
+         for attribute_str in dir(self):
+            attribute = getattr(self, attribute_str)
+            if not isinstance(attribute, ItemPouch):
                 continue
-            for key in attributes.contents.keys():
-                if attributes.contents[key][quant] == 0:
-                    continue
-                print(f'{key}: {attributes.contents[key][k_item].description}')
-                print(f'    Quantity: {attributes.contents[key][quant]}')
+            for key in attribute.contents.keys():
+                if attribute.remove_item(key):
+                    if len(attribute.contents) > 0:
+                        continue
+                    else:
+                        break
+                print(f'{key}: {attribute.contents[key][k_item].description}')
+                print(f'    Quantity: {attribute.contents[key][quant]}')
 
     def update_inventory(self):
-        for attributes in dir(self):
-            if not isinstance(attributes, ItemPouch):
+        for attribute_str in dir(self):
+            attribute = getattr(self, attribute_str)
+            if not isinstance(attribute, ItemPouch):
                 continue
-            for key in attributes.contents.keys():
-                item:Item = attributes.contents[key][k_item]
-                attributes.contents[key][quant] = item.quantity
+            for key in attribute.contents.keys():
+                print(attribute.contents)
+                item:Item = attribute.contents[key][k_item]
+                attribute.contents[key][quant] = item.quantity
+        self.print_inventory_list()
 
     def search_for_matching_item_name(self, name_attempt:str) -> Item | None:
         target_item = None
@@ -120,7 +127,6 @@ class Inventory():
                 self.add_status_items(item, 1)
             elif type(item) == KeyItem:
                 self.add_key_items(item, 1)
-        self.print_inventory_list()
 
     def add_item(self, item:Item):
         self.add_loot([item])
