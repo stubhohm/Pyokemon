@@ -54,7 +54,7 @@ def generate_area():
     route_103.add_adjacent_area(oldale_town)
     
 
-    start_area.set_active_area(petalburg_woods)
+    start_area.set_active_area(littleroot_town)
     start_area.active.navigation.starting_position = (14, 7)
 
     return start_area

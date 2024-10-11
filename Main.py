@@ -10,8 +10,6 @@ from GameData.Class_lib.PC import PC
 from GameData.Class_lib.Area import Area
 from GameData.Class_lib.PlayerCombatInput import PlayerCombatInput
 from GameData.Class_lib.Inventory import Inventory
-from GameData.Item_List.ItemsList import make_potion, make_max_potion, make_antidote
-from GameData.Item_List.ItemsList import make_pokeball
 from GameData.Keys import player, wild, npc, exit
 from GameData.Keys import male, female
 
@@ -21,13 +19,17 @@ player_character.set_inventory(Inventory())
 player_character.set_combat_inputs(PlayerCombatInput())
 player_character.pc = PC()
 player_character.set_roster()
-torchic = instance_torchic(15)
+torchic = instance_torchic(2)
 wurmple = instance_wurmple(3)
 player_character.add_pokemon_to_roster(torchic)
 player_character.add_pokemon_to_roster(wurmple)
 
 def look_for_pokemon_center(area:Town|Route, player_character:Player):
+    print('looking for center')
+    print(f'{area.name}')
+    print(f'{len(area.buildings)}')
     for building in area.buildings:
+        print(f'{building.name}')
         if not building.healing_station:
             continue
         building.player = player_character
@@ -35,11 +37,25 @@ def look_for_pokemon_center(area:Town|Route, player_character:Player):
         player_character.battle_info.white_out = False
         print(f'You recovered at the nearby {building.name}.')
         return True
+    print(f'No pokemon center in {area.name}')
     return False
+
+def go_to_last_pokemoncenter(player_character:Player):
+    area = player_character.last_healing_location
+    for building in area.buildings:
+        print(f'{building.name}')
+        if not building.healing_station:
+            continue
+        building.player = player_character
+        building.heal_roster()
+        player_character.battle_info.white_out = False
+        return area
+
 
 def game_loop():
     player_character.set_battle_info()
     area = generate_area()
+<<<<<<< HEAD
     while not player_character.battle_info.white_out:
         if not ui.input.is_playing:
             return False
@@ -58,6 +74,21 @@ def game_loop():
                 area.active = area
                 return True
     
+=======
+    while ui.input.is_playing:
+        while not player_character.battle_info.white_out:
+            if not ui.input.is_playing:
+                return False
+            print('')
+            action = area.active.enter_area(player_character)
+            if type(action) == Route or type(action) == Town:
+                area.set_active_area(action)
+            if action == exit:
+                return False
+        if player_character.battle_info.white_out:
+            area.active = go_to_last_pokemoncenter(player_character)
+        
+>>>>>>> 1c9a4d18f2291e17c469164e0c9fa572e82948d0
 def main():
     playing = True
     while playing:

@@ -3,9 +3,6 @@ from ..Keys import select, cancel, up, down, left, right, terminate
 from ..Keys import idle
 from ..Keys import navigation, wild
 from ..Keys import name, door_location
-from ..Colors import black
-from ..Constants import step_distance, screen_size
-from ..Function_Lib.General_Functions import get_confirmation, try_again, rand100
 from .ActorBattleInfo import ActorBattleInfo
 from .Sprite import Sprite
 from .Creature import Creature
@@ -101,18 +98,39 @@ class Town():
             if not item.sprite:
                 continue
             self.draw_item_sprites(item.sprite)
-            
+
+    def draw_npcs(self, under_player_image:bool):
+        player_y = self.player.animation.active_sprite.get_pos()[1]
+        for npc in self.npcs:
+            npc_y = npc.sprite.get_pos()[1]
+            if npc_y > player_y:
+                self.draw_item_sprites(npc.sprite)
+            else:
+                if under_player_image:
+                    self.draw_item_sprites(npc.sprite)
+
     def draw_map(self):
         if not self.map:
             print('no map')
-            return
-        
-        ui.display.active.set_player_sprite(self.player.active_sprite)
+            return  
+        ui.display.active.set_player_sprite(self.player.animation.active_sprite)
         self.map.draw(ui.display.active.window)
         self.draw_items_below_player()
+        self.draw_npcs(True)
         ui.display.active.draw_player()
+        self.draw_npcs(False)
         self.draw_items_above_player()
-        ui.display.active.update()
+        ui.display.active.update()       
+
+    def draw_npcs(self, over_player:bool):
+        player_pos = self.player.animation.active_sprite.get_pos()
+        for npc in self.npcs:
+            npc_position = npc.interaction.coordinate
+            npc_is_below = (npc_position[1] < player_pos[1])
+            if npc_is_below and over_player:
+                self.draw_item_sprites(npc.sprite)
+            else:
+                self.draw_item_sprites(npc.sprite)
 
     def select_building(self):
         coordinate = self.navigation.get_coordinate()
@@ -131,11 +149,10 @@ class Town():
             building.enter_building(self.player)
             self.navigation.starting_position = (building.door_coordinate_in[-1][0], building.door_coordinate_in[-1][1] + 1)
             self.navigation.set_player_start_pos()
-            self.player.set_last_direction(down)
-            self.player.set_movement_type(idle)
-
-    def talk_to_npc(self):
-        pass
+            self.player.animation.set_last_direction(down)
+            self.player.animation.set_movement_type(idle)
+            if building.healing_station:
+                self.player.last_healing_location = self
 
     def search_tall_grass(self):
         '''
@@ -149,6 +166,15 @@ class Town():
                 encounter = tall_grass.check_for_encounter()
             if encounter:
                 return encounter
+
+    def check_npc_interactions(self):
+        for npc in self.npcs:
+            if not npc:
+                continue
+            facing_space = self.navigation.get_coordinate_plus_one(self.navigation.get_coordinate())
+            if facing_space != npc.interaction.coordinate:
+                continue
+            npc.interact(self.player)
 
     def check_item_interactions(self):
         for item in self.interactables:
@@ -168,6 +194,8 @@ class Town():
     def check_interaction(self):
         self.enter_a_building()
         self.check_item_interactions()
+        self.check_npc_interactions()
+        self.player.inventory.update_inventory()
 
     def battle_wild_pokemon(self, creature:Creature, player:Player):
         player.update_battle_info()

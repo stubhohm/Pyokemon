@@ -30,7 +30,7 @@ class Navigation():
     def define_navigation(self, player:Player, map:Sprite):
         self.player = player
         self.map = map
-        self.player.get_animation_start()
+        self.player.animation.get_animation_start()
 
     def add_to_building_dicts(self, building_dict:dict):
         self.building_dicts.append(building_dict)
@@ -52,7 +52,7 @@ class Navigation():
             sum_x += mod
             self.handle_x_movement(mod, setup)
             self.map.jump_image()
-            self.player.active_sprite.jump_image()
+            self.player.animation.active_sprite.jump_image()
         print('finished x adjusting on entry')
         while not (self.get_coordinate()[1] == starting_position[1]):
             if (self.get_coordinate()[1] > starting_position[1]):
@@ -64,16 +64,16 @@ class Navigation():
             sum_y += mod
             self.handle_y_movement(mod, setup)
             self.map.jump_image()
-            self.player.active_sprite.jump_image()
+            self.player.animation.active_sprite.jump_image()
         print('finished y adjusting on entry')
         self.reset_velocity()
-        self.player.get_animation_start()
+        self.player.animation.get_animation_start()
 
     def move_sprites(self):
         self.map.move_image()
-        self.player.active_sprite.move_image()
-        self.player.incriment_steps()
-        self.player.update_player_sprite()
+        self.player.animation.active_sprite.move_image()
+        self.player.animation.incriment_steps()
+        self.player.animation.update_player_sprite()
 
     def determine_velocity(self, action:str):
         self.reset_velocity()
@@ -106,30 +106,30 @@ class Navigation():
         half_step = step_distance / 2
         if check_width:
             screen_dimention = screen_size[0]
-            player_pos = self.player.active_sprite.pos.x
+            player_pos = self.player.animation.active_sprite.pos.x
         else:
             screen_dimention = screen_size[1]
-            player_pos = self.player.active_sprite.pos.y
+            player_pos = self.player.animation.active_sprite.pos.y
 
         player_off_center = not((screen_dimention / 2 - half_step) <=  player_pos <= (screen_dimention / 2 + half_step))
         return player_off_center
 
     def reset_positions(self):
         self.map.pos.x, self.map.pos.y = 0, 0
-        self.player.active_sprite.pos.x, self.player.active_sprite.pos.y = 0, 0
+        self.player.animation.active_sprite.pos.x, self.player.animation.active_sprite.pos.y = 0, 0
 
     def reset_velocity(self):
-        self.player.active_sprite.set_velocity(0, 0)
+        self.player.animation.active_sprite.set_velocity(0, 0)
         self.map.set_velocity(0, 0)
 
     def get_coordinate(self):
         map_x, map_y = abs(self.map.pos.x), abs(self.map.pos.y)
-        player_x, player_y = abs(self.player.active_sprite.pos.x), abs(self.player.active_sprite.pos.y)
+        player_x, player_y = abs(self.player.animation.active_sprite.pos.x), abs(self.player.animation.active_sprite.pos.y)
         x, y = int((map_x + player_x) / step_distance), int((map_y + player_y) / step_distance)
         return x, y
 
     def get_coordinate_plus_one(self, coordinate):
-        x_y_vector = self.direction_to_vector(self.player.get_last_direction())
+        x_y_vector = self.direction_to_vector(self.player.animation.get_last_direction())
         target_coords = (coordinate[0] + x_y_vector[0], coordinate[1]+ x_y_vector[1])
         return target_coords
 
@@ -139,13 +139,13 @@ class Navigation():
         if x < 0:
             horizontal_pin = (self.map.pos.x == 0)
             if not setup:
-                self.player.set_last_direction(left)
+                self.player.animation.set_last_direction(left)
         else: 
             horizontal_pin = (self.map.pos.x <= self.map.horizontal_bound)
             if not setup:
-                self.player.set_last_direction(right)
+                self.player.animation.set_last_direction(right)
         if horizontal_pin or self.is_player_off_center(True) or self.map.image_lock:
-            self.player.active_sprite.set_velocity(x, 0)
+            self.player.animation.active_sprite.set_velocity(x, 0)
         else:
             self.map.set_velocity(x, 0)
 
@@ -155,13 +155,13 @@ class Navigation():
         if y < 0:
             vertical_pin = (self.map.pos.y == 0)
             if not setup:
-                self.player.set_last_direction(up)
+                self.player.animation.set_last_direction(up)
         else: 
             vertical_pin = (self.map.pos.y <= self.map.vertical_bound)
             if not setup:
-                self.player.set_last_direction(down)
+                self.player.animation.set_last_direction(down)
         if vertical_pin or self.is_player_off_center(False) or self.map.image_lock:
-            self.player.active_sprite.set_velocity(0, y)
+            self.player.animation.active_sprite.set_velocity(0, y)
         else:
             self.map.set_velocity(0, y)
 
@@ -209,7 +209,7 @@ class Navigation():
         return
 
     def handle_movement(self, x:int, y:int):
-        self.player.set_movement_type(walk)
+        self.player.animation.set_movement_type(walk)
         if x != 0:
             self.handle_x_movement(x)
         if y != 0:
@@ -218,28 +218,28 @@ class Navigation():
         target_coords = self.get_coordinate_plus_one(coords)
         target_coords_1 = self.get_coordinate_plus_one(target_coords)
         if self.blocked_spaces.get(target_coords, False) and not self.ghost_mode:
-            self.player.set_movement_type(idle)
-            self.player.update_player_sprite()
+            self.player.animation.set_movement_type(idle)
+            self.player.animation.update_player_sprite()
             return
         if self.water_spaces.get(target_coords, False) and not self.ghost_mode:
-            if not self.player.movement_type == surfing:
-                self.player.set_movement_type(idle)
-                self.player.update_player_sprite()
+            if not self.player.animation.movement_type == surfing:
+                self.player.animation.set_movement_type(idle)
+                self.player.animation.update_player_sprite()
                 return
         else:
-            if self.player.movement_type == surfing:
-                self.player.movement_type = idle
+            if self.player.animation.movement_type == surfing:
+                self.player.animation.movement_type = idle
                 self.jump_ledge()
         
         if self.ledges.get(target_coords, False) and not self.ghost_mode:
             if not self.ledge_tops.get(self.get_coordinate(), False):
-                self.player.set_movement_type(idle)
-                self.player.update_player_sprite()
+                self.player.animation.set_movement_type(idle)
+                self.player.animation.update_player_sprite()
                 print('not at a ledgetop')
                 return
             if self.blocked_spaces.get(target_coords_1, False) or self.ledges.get(target_coords_1, False):
-                self.player.set_movement_type(idle)
-                self.player.update_player_sprite()
+                self.player.animation.set_movement_type(idle)
+                self.player.animation.update_player_sprite()
                 print('target space is blocked')
                 return
             else:
@@ -247,7 +247,7 @@ class Navigation():
         self.move_sprites()
 
     def jump_ledge(self):
-        self.player.set_movement_type(jump)
+        self.player.animation.set_movement_type(jump)
         self.map.set_jumping(True)
 
     def print_coordinate_list(self, name, coords):
@@ -320,18 +320,18 @@ class Navigation():
 
     def complete_movement(self):
         self.move_sprites()
-        moving = self.map.moving or self.player.active_sprite.moving
+        moving = self.map.moving or self.player.animation.active_sprite.moving
         if not moving:
-            self.player.set_movement_type(idle)
+            self.player.animation.set_movement_type(idle)
             self.map.set_jumping(False)
-            self.player.update_player_sprite()
+            self.player.animation.update_player_sprite()
             return True
         return False
 
     def navigate_area(self):
         ui.display.active.window.fill(black)
         action = ui.input.get_player_input(True)    
-        moving = self.map.moving or self.player.active_sprite.moving
+        moving = self.map.moving or self.player.animation.active_sprite.moving
         if moving:
             return self.complete_movement()
         if self.player.battle_info.white_out:

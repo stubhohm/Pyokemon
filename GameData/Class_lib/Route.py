@@ -1,6 +1,6 @@
 from ..Keys import route, wild, npc
 from ..Keys import exit, leave, select
-from ..Keys import no_weather
+from ..Keys import no_weather, idle, down
 from ..Keys import navigation, battle, name, door_location
 from .Sprite import Sprite
 from .TallGrass import TallGrass
@@ -89,7 +89,7 @@ class Route():
             print('no map')
             return
         
-        ui.display.active.set_player_sprite(self.player.active_sprite)
+        ui.display.active.set_player_sprite(self.player.animation.active_sprite)
         self.map.draw(ui.display.active.window)
         self.draw_items_below_player()
         ui.display.active.draw_player()
@@ -109,6 +109,28 @@ class Route():
             if encounter:
                 return encounter
 
+    def select_building(self):
+        coordinate = self.navigation.get_coordinate()
+        for building in self.buildings:
+            if not building:
+                continue
+            if coordinate in building.door_coordinate_in:
+                return building
+        return None
+
+    def enter_a_building(self):
+        building = self.select_building()
+        if not building:
+            return
+        else:
+            building.enter_building(self.player)
+            self.navigation.starting_position = (building.door_coordinate_in[-1][0], building.door_coordinate_in[-1][1] + 1)
+            self.navigation.set_player_start_pos()
+            self.player.set_last_direction(down)
+            self.player.set_movement_type(idle)
+            if building.healing_station:
+                self.player.last_healing_location = self
+
     def check_item_interactions(self):
         for item in self.interactables:
             if not item:
@@ -125,9 +147,11 @@ class Route():
                 item.interact()
 
     def check_interaction(self):
+        self.enter_a_building()
         self.check_item_interactions()
-        
 
+        
+            
     def determine_encounter(self):
         '''
         Takes player position to see they enouncter a trainer or wild pokemon.'

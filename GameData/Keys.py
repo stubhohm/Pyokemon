@@ -10,6 +10,8 @@ select, cancel, terminate = 'select', 'cancel', 'terminate'
 idle, walk, surfing, jump = 'idle', 'walk', 'surfing', 'jump'
 movement_types = [walk, idle, run, jump]
 
+# Quest keys
+not_taken, taken, completed, rewarded = 'Not Take', 'Taken', 'Completed', 'Rewarded'
 
 # Bag Pockets
 item_pocket, ball_pocket, key_item_pocket, tmhm_pocket, berries_pocket = 'Items', 'Balls', 'Key Items', 'TMs and HMs', 'Berries'

@@ -32,13 +32,9 @@ class Item():
     def consume_item(self):
         if self.is_unlimited_use:
             return
-        if self.is_key:
-            return
         if self.quantity > 0:
             self.quantity -= 1
-            return
-        else:
-            return
+        return
         
     def use_item(self, target):
         self.consume_item()
