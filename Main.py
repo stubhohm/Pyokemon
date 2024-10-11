@@ -55,26 +55,6 @@ def go_to_last_pokemoncenter(player_character:Player):
 def game_loop():
     player_character.set_battle_info()
     area = generate_area()
-<<<<<<< HEAD
-    while not player_character.battle_info.white_out:
-        if not ui.input.is_playing:
-            return False
-        print('')
-        action = area.active.enter_area(player_character)
-        if type(action) == Route or type(action) == Town:
-            route_or_town = action
-            area.set_active_area(route_or_town)
-        if action == exit:
-            return False
-    if look_for_pokemon_center(area.active, player_character):
-        return True
-    else:
-        for adj_area in area.active.adjacent_areas:
-            if look_for_pokemon_center(adj_area, player_character):
-                area.active = area
-                return True
-    
-=======
     while ui.input.is_playing:
         while not player_character.battle_info.white_out:
             if not ui.input.is_playing:
@@ -88,7 +68,6 @@ def game_loop():
         if player_character.battle_info.white_out:
             area.active = go_to_last_pokemoncenter(player_character)
         
->>>>>>> 1c9a4d18f2291e17c469164e0c9fa572e82948d0
 def main():
     playing = True
     while playing:
