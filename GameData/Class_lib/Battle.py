@@ -282,7 +282,6 @@ class Battle():
             self.check_faint(combatant)
         if not new_active:
             return
-        text = 'knock out check'
         for combatant in self.combatants:
             if target_actor.target == combatant.active:
                 self.resolve_swap(new_active, target_actor)

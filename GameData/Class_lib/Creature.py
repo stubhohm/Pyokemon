@@ -66,7 +66,7 @@ class Creature():
     def attempt_capture(self):
         pass
 
-    def set_evolution(self, evolution):
+    def set_evolution(self, evolution: 'Creature'):
         text = f'{self.name} evolved into {evolution.name}!'
         self.print_to_terminal(text)
         if not self.custom_name:
@@ -94,7 +94,7 @@ class Creature():
         text = f'Name: {self.name}'
         print(text)
         for moves in self.moves.move_list:
-            text = f'Move: name: {moves.name} pp: {moves.points}, element: {moves.element}'
+            text = f'Move: name: {moves.name} pp: {moves.attributes.points}, element: {moves.attributes.element}'
             print(text)
         text = f'Ability {self.stats.ability.name}'
         print(text)

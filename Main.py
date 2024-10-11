@@ -24,7 +24,6 @@ player_character.set_roster()
 torchic = instance_torchic(15)
 wurmple = instance_wurmple(3)
 player_character.add_pokemon_to_roster(torchic)
-torchic.stats.leveling.add_exp(425, True)
 player_character.add_pokemon_to_roster(wurmple)
 
 def look_for_pokemon_center(area:Town|Route, player_character:Player):
@@ -47,7 +46,8 @@ def game_loop():
         print('')
         action = area.active.enter_area(player_character)
         if type(action) == Route or type(action) == Town:
-            area.set_active_area(action)
+            route_or_town = action
+            area.set_active_area(route_or_town)
         if action == exit:
             return False
     if look_for_pokemon_center(area.active, player_character):
